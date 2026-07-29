@@ -23,9 +23,8 @@
     }
   },
   "workspaces": [
-    "apps/*",
-    "packages/*", 
     "native/*",
-    "mobile/*"
+    "mobile/*",
+    "server/*"
   ]
 }
