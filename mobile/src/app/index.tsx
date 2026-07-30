@@ -20,16 +20,16 @@ export const mainScreens: Screen[] = [
     icon: "newspaper-outline" as const,
   },
   {
-    title: "Create Post Screen",
-    desc: "Create a new text post page",
-    href: "/create-post" as Href,
-    icon: "add-circle-outline" as const,
-  },
-  {
     title: "Notifications Screen",
     desc: "View activity and notifications page",
     href: "/notifications" as Href,
     icon: "notifications-outline" as const,
+  },
+  {
+    title: "Profile Screen",
+    desc: "View and manage user profile page",
+    href: "/profile" as Href,
+    icon: "person-outline" as const,
   },
 ];
 
