@@ -13,6 +13,7 @@ import { generateOpenAPIDocument } from "@/lib";
 import { errorHandler, notFoundHandler } from "@/middleware";
 
 import { userRouter } from "./api/user/user.route";
+import { connectDB } from "./db";
 import { getLocalIP } from "./lib/get-my-ip";
 import { morganDevFormat } from "./lib/morgan";
 
@@ -58,7 +59,7 @@ app.use(errorHandler);
 
 const port = process.env.PORT || 5000;
 app.listen(port, async () => {
-  // await connectDB();
+  await connectDB();
 
   console.log(`🚀 Server is running on port http://localhost:${port}`);
   console.log(`✨ Server is running on port http://${getLocalIP()}:${port} \n`);
