@@ -56,9 +56,9 @@ export function PostCard({
       {/* Post Footer Actions */}
       <View className="flex-row items-center justify-between pt-1">
         <View className="flex-row items-center space-x-6 gap-6">
-          {/* Like Button */}
+          {/* Like Button (Smooth Emerald Green Heart) */}
           <TouchableOpacity activeOpacity={0.7} className="flex-row items-center">
-            <Ionicons name="heart" size={20} color="#EF4444" />
+            <Ionicons name="heart" size={20} color="#059669" />
             <Text className="ml-1.5 text-xs font-semibold text-slate-600">{likesCount}</Text>
           </TouchableOpacity>
 

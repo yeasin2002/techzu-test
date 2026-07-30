@@ -84,7 +84,7 @@ export default function FeedPage() {
       </ScrollView>
 
       {/* Fixed Bottom Navigation */}
-      <BottomTabBar />
+      <BottomTabBar activeTab="feed" />
     </View>
   );
 }
