@@ -5,13 +5,27 @@ import { getToken } from "./token";
 
 export const kyInstance = ky.create({
   prefix: env.EXPO_PUBLIC_SERVER_URL,
+  timeout: 15000,
   hooks: {
     beforeRequest: [
       async ({ request }) => {
+        console.log(`🚀 [HTTP OUT] ${request.method} ${request.url}`);
         const token = await getToken();
         if (token) {
           request.headers.set("Authorization", `Bearer ${token}`);
         }
+      },
+    ],
+    afterResponse: [
+      ({ response }) => {
+        console.log(`✅ [HTTP IN] ${response.status} ${response.url}`);
+        return response;
+      },
+    ],
+    beforeError: [
+      ({ error, request }) => {
+        console.error(`❌ [HTTP ERROR] ${error.message} (${request.url})`);
+        return error;
       },
     ],
   },

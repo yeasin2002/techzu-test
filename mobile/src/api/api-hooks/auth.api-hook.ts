@@ -8,10 +8,11 @@ const AUTH_KEYS = {
   me: () => ["auth", "me"] as const,
 };
 
-export const useMe = () => {
+export const useMe = (enabled = true) => {
   return useQuery({
     queryKey: AUTH_KEYS.me(),
     queryFn: () => authApi.getMe(),
+    enabled,
     select: (response) => response.data.user,
   });
 };

@@ -1,19 +1,21 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Href } from "expo-router";
-import { Link, Stack } from "expo-router";
+import { Link, router, Stack } from "expo-router";
 import { Button, FieldError, InputGroup, TextField } from "heroui-native";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";
 import { z } from "zod";
 
+import { useLogin } from "@/api/api-hooks/auth.api-hook";
 import { Container } from "@/components/container";
+import { useAuth } from "@/contexts/auth-context";
 import { AuthHeader } from "@/feature/auth-header";
 import { SocialAuth } from "@/feature/social-auth";
 import { StyledIcons } from "@/lib";
 
 const loginSchema = z.object({
-  email: z.string().min(1, "Email is required").email("Invalid email address"),
+  username: z.string().min(1, "Username or email is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
   rememberMe: z.boolean(),
 });
@@ -22,6 +24,8 @@ type LoginSchemaType = z.infer<typeof loginSchema>;
 
 export default function LoginScreen() {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const { mutate: login, isPending } = useLogin();
+  const { setAuthToken } = useAuth();
 
   const {
     control,
@@ -30,7 +34,7 @@ export default function LoginScreen() {
   } = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
+      username: "",
       password: "",
       rememberMe: false,
     },
@@ -38,7 +42,20 @@ export default function LoginScreen() {
   });
 
   const onSubmit = (data: LoginSchemaType) => {
-    console.log("Login successful:", data);
+    login(
+      {
+        username: data.username,
+        password: data.password,
+      },
+      {
+        onSuccess: async (response) => {
+          if (response.data?.token) {
+            await setAuthToken(response.data.token);
+            router.replace("/feed" as Href);
+          }
+        },
+      },
+    );
   };
 
   return (
@@ -47,19 +64,19 @@ export default function LoginScreen() {
 
       <View className="flex-1 justify-center bg-[#FFFFFF] px-6">
         <AuthHeader
-          desc="Sign in to continue your beauty journey"
+          desc="Sign in to continue your social journey"
           title="Welcome Back!"
         />
 
-        {/* Email Field */}
+        {/* Username / Email Field */}
         <View className="mb-4">
           <Text className="mb-2 font-semibold text-foreground text-sm">
-            Enter Email
+            Enter Username or Email
           </Text>
-          <TextField isInvalid={!!errors.email}>
+          <TextField isInvalid={!!errors.username}>
             <Controller
               control={control}
-              name="email"
+              name="username"
               render={({ field: { onChange, onBlur, value } }) => (
                 <InputGroup className="relative h-14 w-full flex-row items-center rounded-2xl border border-[#E5E5E5] bg-white">
                   <InputGroup.Prefix
@@ -68,23 +85,22 @@ export default function LoginScreen() {
                   >
                     <StyledIcons
                       className="text-muted"
-                      name="mail-outline"
+                      name="person-outline"
                       size={20}
                     />
                   </InputGroup.Prefix>
                   <InputGroup.Input
                     autoCapitalize="none"
-                    className="h-full w-full border-transparent bg-transparent text-foreground"
-                    keyboardType="email-address"
+                    className="h-full w-full border-transparent bg-transparent pl-12 text-foreground"
                     onBlur={onBlur}
                     onChangeText={onChange}
-                    placeholder="Plant@gmail.com"
+                    placeholder="Enter your username"
                     value={value}
                   />
                 </InputGroup>
               )}
             />
-            <FieldError>{errors.email?.message}</FieldError>
+            <FieldError>{errors.username?.message}</FieldError>
           </TextField>
         </View>
 
@@ -110,7 +126,7 @@ export default function LoginScreen() {
                     />
                   </InputGroup.Prefix>
                   <InputGroup.Input
-                    className="h-full w-full border-transparent bg-transparent text-foreground"
+                    className="h-full w-full border-transparent bg-transparent pr-12 pl-12 text-foreground"
                     onBlur={onBlur}
                     onChangeText={onChange}
                     placeholder="••••••••"
@@ -178,11 +194,12 @@ export default function LoginScreen() {
         {/* Login Button */}
         <Button
           className="mb-6 h-14 w-full items-center justify-center rounded-2xl bg-emerald-600"
+          isDisabled={isPending}
           onPress={handleSubmit(onSubmit)}
           variant="primary"
         >
           <Button.Label className="font-semibold text-base text-primary-foreground">
-            Log in
+            {isPending ? "Logging in..." : "Log in"}
           </Button.Label>
         </Button>
 
@@ -200,7 +217,7 @@ export default function LoginScreen() {
           <Text className="text-default-500 text-sm">
             Don't have an account?
           </Text>
-          <Link asChild href={"/(auth)/register" as Href}>
+          <Link asChild href={"/auth/register" as Href}>
             <Pressable>
               <Text className="font-semibold text-primary text-sm">
                 Sign Up

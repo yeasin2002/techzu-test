@@ -1,27 +1,22 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Href } from "expo-router";
-import { Link, Stack } from "expo-router";
+import { Link, router, Stack } from "expo-router";
 import { Button, FieldError, InputGroup, TextField } from "heroui-native";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Pressable, Text, View } from "react-native";
 import { z } from "zod";
 
+import { useSignup } from "@/api/api-hooks/auth.api-hook";
 import { Container } from "@/components/container";
+import { useAuth } from "@/contexts/auth-context";
 import { AuthHeader } from "@/feature/auth-header";
 import { SocialAuth } from "@/feature/social-auth";
 import { StyledIcons } from "@/lib";
 
 const registerSchema = z
   .object({
-    fullName: z.string().min(1, "Full name is required"),
-    email: z
-      .string()
-      .min(1, "Email is required")
-      .email("Invalid email address"),
-    phoneNumber: z
-      .string()
-      .min(6, "Phone number must be at least 6 characters"),
+    username: z.string().min(3, "Username must be at least 3 characters"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string().min(1, "Please confirm your password"),
     agree: z.boolean().refine((val) => val === true, {
@@ -40,6 +35,9 @@ export default function RegisterScreen() {
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
 
+  const { mutate: signup, isPending } = useSignup();
+  const { setAuthToken } = useAuth();
+
   const {
     control,
     handleSubmit,
@@ -47,9 +45,7 @@ export default function RegisterScreen() {
   } = useForm<RegisterSchemaType>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      fullName: "",
-      email: "",
-      phoneNumber: "",
+      username: "",
       password: "",
       confirmPassword: "",
       agree: false,
@@ -58,7 +54,20 @@ export default function RegisterScreen() {
   });
 
   const onSubmit = (data: RegisterSchemaType) => {
-    console.log("Registration successful:", data);
+    signup(
+      {
+        username: data.username,
+        password: data.password,
+      },
+      {
+        onSuccess: async (response) => {
+          if (response.data?.token) {
+            await setAuthToken(response.data.token);
+            router.replace("/feed" as Href);
+          }
+        },
+      },
+    );
   };
 
   return (
@@ -68,85 +77,43 @@ export default function RegisterScreen() {
       <View className="flex-1 justify-center bg-[#FFFFFF] px-6 py-8">
         <AuthHeader
           className="mt-10"
-          desc="Join us and Start your beauty journey today"
+          desc="Join us and start your journey today"
           title="Create Account!"
         />
 
-        {/* Full Name Field */}
+        {/* Username Field */}
         <View className="mb-4">
           <Text className="mb-2 font-semibold text-foreground text-sm">
-            Full Name
+            Username
           </Text>
-          <TextField isInvalid={!!errors.fullName}>
+          <TextField isInvalid={!!errors.username}>
             <Controller
               control={control}
-              name="fullName"
+              name="username"
               render={({ field: { onChange, onBlur, value } }) => (
                 <InputGroup className="relative h-14 w-full flex-row items-center rounded-2xl border border-[#E5E5E5] bg-white">
-                  <InputGroup.Input
-                    className="h-full w-full border-transparent bg-transparent px-4 text-foreground"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    placeholder="Plant@gmail.com"
-                    value={value}
-                  />
-                </InputGroup>
-              )}
-            />
-            <FieldError>{errors.fullName?.message}</FieldError>
-          </TextField>
-        </View>
-
-        {/* Email Address Field */}
-        <View className="mb-4">
-          <Text className="mb-2 font-semibold text-foreground text-sm">
-            Email Address
-          </Text>
-          <TextField isInvalid={!!errors.email}>
-            <Controller
-              control={control}
-              name="email"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputGroup className="relative h-14 w-full flex-row items-center rounded-2xl border border-[#E5E5E5] bg-white">
+                  <InputGroup.Prefix
+                    className="absolute top-0 bottom-0 left-0 items-center justify-center pr-2 pl-4"
+                    isDecorative
+                  >
+                    <StyledIcons
+                      className="text-muted"
+                      name="person-outline"
+                      size={20}
+                    />
+                  </InputGroup.Prefix>
                   <InputGroup.Input
                     autoCapitalize="none"
-                    className="h-full w-full border-transparent bg-transparent px-4 text-foreground"
-                    keyboardType="email-address"
+                    className="h-full w-full border-transparent bg-transparent pl-12 text-foreground"
                     onBlur={onBlur}
                     onChangeText={onChange}
-                    placeholder="Plant@gmail.com"
+                    placeholder="Enter your username"
                     value={value}
                   />
                 </InputGroup>
               )}
             />
-            <FieldError>{errors.email?.message}</FieldError>
-          </TextField>
-        </View>
-
-        {/* Phone Number Field */}
-        <View className="mb-4">
-          <Text className="mb-2 font-semibold text-foreground text-sm">
-            Phone Number
-          </Text>
-          <TextField isInvalid={!!errors.phoneNumber}>
-            <Controller
-              control={control}
-              name="phoneNumber"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <InputGroup className="relative h-14 w-full flex-row items-center rounded-2xl border border-[#E5E5E5] bg-white">
-                  <InputGroup.Input
-                    className="h-full w-full border-transparent bg-transparent px-4 text-foreground"
-                    keyboardType="phone-pad"
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    placeholder="0156614612"
-                    value={value}
-                  />
-                </InputGroup>
-              )}
-            />
-            <FieldError>{errors.phoneNumber?.message}</FieldError>
+            <FieldError>{errors.username?.message}</FieldError>
           </TextField>
         </View>
 
@@ -161,8 +128,18 @@ export default function RegisterScreen() {
               name="password"
               render={({ field: { onChange, onBlur, value } }) => (
                 <InputGroup className="relative h-14 w-full flex-row items-center rounded-2xl border border-[#E5E5E5] bg-white">
+                  <InputGroup.Prefix
+                    className="absolute top-0 bottom-0 left-0 items-center justify-center pr-2 pl-4"
+                    isDecorative
+                  >
+                    <StyledIcons
+                      className="text-muted"
+                      name="lock-closed-outline"
+                      size={20}
+                    />
+                  </InputGroup.Prefix>
                   <InputGroup.Input
-                    className="h-full w-full border-transparent bg-transparent pr-12 pl-4 text-foreground"
+                    className="h-full w-full border-transparent bg-transparent pr-12 pl-12 text-foreground"
                     onBlur={onBlur}
                     onChangeText={onChange}
                     placeholder="••••••••"
@@ -201,8 +178,18 @@ export default function RegisterScreen() {
               name="confirmPassword"
               render={({ field: { onChange, onBlur, value } }) => (
                 <InputGroup className="relative h-14 w-full flex-row items-center rounded-2xl border border-[#E5E5E5] bg-white">
+                  <InputGroup.Prefix
+                    className="absolute top-0 bottom-0 left-0 items-center justify-center pr-2 pl-4"
+                    isDecorative
+                  >
+                    <StyledIcons
+                      className="text-muted"
+                      name="lock-closed-outline"
+                      size={20}
+                    />
+                  </InputGroup.Prefix>
                   <InputGroup.Input
-                    className="h-full w-full border-transparent bg-transparent pr-12 pl-4 text-foreground"
+                    className="h-full w-full border-transparent bg-transparent pr-12 pl-12 text-foreground"
                     onBlur={onBlur}
                     onChangeText={onChange}
                     placeholder="••••••••"
@@ -280,11 +267,12 @@ export default function RegisterScreen() {
         {/* Create Account Button */}
         <Button
           className="mb-6 h-14 w-full items-center justify-center rounded-2xl bg-emerald-600"
+          isDisabled={isPending}
           onPress={handleSubmit(onSubmit)}
           variant="primary"
         >
           <Button.Label className="font-semibold text-base text-primary-foreground">
-            Create Account
+            {isPending ? "Creating Account..." : "Create Account"}
           </Button.Label>
         </Button>
 
@@ -300,9 +288,9 @@ export default function RegisterScreen() {
         {/* Sign In Link */}
         <View className="flex-row items-center justify-center gap-1">
           <Text className="text-default-500 text-sm">
-            Alerdy have an account?
+            Already have an account?
           </Text>
-          <Link asChild href={"/(auth)/login" as Href}>
+          <Link asChild href={"/auth/login" as Href}>
             <Pressable>
               <Text className="font-semibold text-primary text-sm">
                 Sign In
