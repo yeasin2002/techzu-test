@@ -1,0 +1,54 @@
+# Authentication API Endpoints
+# Use with VS Code REST Client or HTTP Client extension
+
+@baseUrl = http://localhost:48217
+
+### 1. User Signup
+# @name signup
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "yeasin_user",
+  "password": "password123",
+  "fcmToken": "sample_fcm_device_token_123"
+}
+
+### 2. User Signup Validation Error (Short Username)
+POST {{baseUrl}}/api/auth/signup
+Content-Type: application/json
+
+{
+  "username": "yo",
+  "password": "password123"
+}
+
+### 3. User Login
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "yeasin_user",
+  "password": "password123",
+  "fcmToken": "sample_fcm_device_token_updated"
+}
+
+### 4. User Login (Invalid Credentials)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "yeasin_user",
+  "password": "wrong_password"
+}
+
+### 5. Get Current User Profile (Requires Bearer Token)
+# Replace {{login.response.body.data.token}} with actual token or use response variable
+@authToken = {{login.response.body.data.token}}
+
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{authToken}}
+
+### 6. Get Current User Profile (Unauthorized / No Token)
+GET {{baseUrl}}/api/auth/me
