@@ -23,7 +23,7 @@
     }
   },
   "workspaces": [
-    "mobile/*",
-    "server/*"
+    "mobile",
+    "server"
   ]
 }

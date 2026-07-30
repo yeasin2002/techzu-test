@@ -12,6 +12,7 @@ import swaggerUi from "swagger-ui-express";
 import { generateOpenAPIDocument } from "@/lib";
 import { errorHandler, notFoundHandler } from "@/middleware";
 
+import { authRouter } from "./api/auth/auth.route";
 import { userRouter } from "./api/user/user.route";
 import { connectDB } from "./db";
 import { getLocalIP } from "./lib/get-my-ip";
@@ -36,6 +37,7 @@ app.get("/", (_req, res) => {
   res.status(200).send("OK");
 });
 
+app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 
 // OpenAPI documentation
