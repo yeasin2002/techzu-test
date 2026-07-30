@@ -91,7 +91,7 @@ export default function ForgotPasswordScreen() {
 
         {/* Next Button */}
         <Button
-          className="h-14 w-full items-center justify-center rounded-2xl bg-[#F0B100]"
+          className="h-14 w-full items-center justify-center rounded-2xl bg-emerald-600"
           onPress={handleSubmit(onSubmit)}
           variant="primary"
         >
