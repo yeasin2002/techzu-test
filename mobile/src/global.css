@@ -3,3 +3,40 @@
 @import "heroui-native/styles";
 
 @source "./node_modules/heroui-native/lib";
+
+@theme {
+  --color-brand: #f0b100;
+  --color-foreground: #000000;
+  --color-foreground-secondary: #6b7280;
+  --color-muted: #6b7280;
+  --color-background: #ffffff;
+  --color-card: #ffffff;
+  --color-content1: #ffffff;
+  --color-border: #e5e7eb;
+  --color-default-200: #e5e7eb;
+  --color-default-400: #9ca3af;
+  --color-default-500: #6b7280;
+  --color-primary: #f0b100;
+  --color-primary-foreground: #ffffff;
+
+  /* custom */
+  --color-main-primary: #fe9a00;
+  --color-main-bg-overlay: #f9fafb;
+}
+
+
+@utility font-poppins {
+  font-family: Poppins_400Regular;
+}
+
+@utility font-poppins-medium {
+  font-family: Poppins_500Medium;
+}
+
+@utility font-poppins-semibold {
+  font-family: Poppins_600SemiBold;
+}
+
+@utility font-poppins-bold {
+  font-family: Poppins_700Bold;
+}

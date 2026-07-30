@@ -97,9 +97,9 @@ const ShowScreenItems = ({
     </Text>
     {screens.map((item) => (
       <Link asChild href={item.href} key={item.title}>
-        <Pressable className="flex-row items-center gap-4 rounded-2xl bg-content1 p-4 mb-3 active:opacity-75">
+        <Pressable className="flex-row items-center gap-4 rounded-2xl bg-content1 p-4 mb-3 active:opacity-75 ">
           <View className="h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
-            <StyledIcons className="text-primary" name={item.icon} size={20} />
+            <StyledIcons className="text-black" name={item.icon} size={20} />
           </View>
           <View className="flex-1">
             <Text className="font-semibold text-foreground text-sm">

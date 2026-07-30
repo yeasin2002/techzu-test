@@ -33,13 +33,6 @@ export function Header({
           <Ionicons name="notifications-outline" size={22} color="#475569" />
           <View className="absolute top-2 right-2 h-2 w-2 rounded-full bg-emerald-500 border border-white" />
         </TouchableOpacity>
-
-        {/* User Avatar */}
-        <View className="relative h-10 w-10 items-center justify-center rounded-full bg-emerald-100">
-          <Text className="text-sm font-semibold text-emerald-700">YK</Text>
-          {/* Online indicator */}
-          <View className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-500 border-2 border-white" />
-        </View>
       </View>
     </View>
   );
