@@ -13,6 +13,7 @@ import { generateOpenAPIDocument } from "@/lib";
 import { errorHandler, notFoundHandler } from "@/middleware";
 
 import { authRouter } from "./api/auth/auth.route";
+import { postRouter } from "./api/post/post.route";
 import { userRouter } from "./api/user/user.route";
 import { connectDB } from "./db";
 import { getLocalIP } from "./lib/get-my-ip";
@@ -38,6 +39,7 @@ app.get("/", (_req, res) => {
 });
 
 app.use("/api/auth", authRouter);
+app.use("/api/posts", postRouter);
 app.use("/api/users", userRouter);
 
 // OpenAPI documentation

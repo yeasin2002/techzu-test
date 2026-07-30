@@ -1,0 +1,52 @@
+# Posts & Interactions API Endpoints
+# Use with VS Code REST Client or HTTP Client extension
+
+@baseUrl = http://localhost:48217
+
+### 1. Authenticate User (Get JWT Token)
+# @name login
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "yeasin_user",
+  "password": "password123",
+  "fcmToken": "fcm_token_sample_123"
+}
+
+### Store Auth Token
+@token = {{login.response.body.data.token}}
+
+### 2. Create a Text Post
+# @name createPost
+POST {{baseUrl}}/api/posts
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "text": "Hello world! This is my first text post on Mini Social Feed App. 🚀"
+}
+
+### Store Post ID
+@postId = {{createPost.response.body.data.id}}
+
+### 3. Get Paginated Feed (Newest First)
+GET {{baseUrl}}/api/posts?page=1&limit=10
+Authorization: Bearer {{token}}
+
+### 4. Filter Feed by Username
+GET {{baseUrl}}/api/posts?username=yeasin_user
+Authorization: Bearer {{token}}
+
+### 5. Like / Unlike Post (Toggle)
+POST {{baseUrl}}/api/posts/{{postId}}/like
+Authorization: Bearer {{token}}
+
+### 6. Add Comment to Post
+POST {{baseUrl}}/api/posts/{{postId}}/comment
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "text": "Great post! Really proud of this implementation. 🙌"
+}
