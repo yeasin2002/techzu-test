@@ -1,9 +1,9 @@
+import { AppThemeProvider } from "@/contexts/app-theme-context";
 import "@/global.css";
 import { Stack } from "expo-router";
 import { HeroUINativeProvider } from "heroui-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
-import { AppThemeProvider } from "@/contexts/app-theme-context";
 
 export const unstable_settings = {
   initialRouteName: "index",
@@ -14,7 +14,9 @@ export default function Layout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <KeyboardProvider>
         <AppThemeProvider>
-          <HeroUINativeProvider config={{ devInfo: { stylingPrinciples: false } }}>
+          <HeroUINativeProvider
+            config={{ devInfo: { stylingPrinciples: false } }}
+          >
             <StackLayout />
           </HeroUINativeProvider>
         </AppThemeProvider>

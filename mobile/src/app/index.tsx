@@ -1,90 +1,119 @@
-import { ScrollView, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Container } from "@/components/container";
+import { StyledIcons } from "@/lib";
+import type { Ionicons } from "@expo/vector-icons";
+import type { Href } from "expo-router";
+import { Link } from "expo-router";
+import { Pressable, Text, View } from "react-native";
 
-import {
-  BottomTabBar,
-  CreatePostCard,
-  Header,
-  PostCard,
-  SearchBar,
-} from "@/components";
+export interface Screen {
+  desc: string;
+  href: Href;
+  icon: keyof typeof Ionicons.glyphMap;
+  title: string;
+}
 
-export default function HomePage() {
-  const insets = useSafeAreaInsets();
+export const mainScreens: Screen[] = [
+  {
+    title: "Social Feed Screen",
+    desc: "School social media feed page",
+    href: "/feed" as Href,
+    icon: "newspaper-outline" as const,
+  },
+  {
+    title: "Create Post Screen",
+    desc: "Create a new text post page",
+    href: "/create-post" as Href,
+    icon: "add-circle-outline" as const,
+  },
+  {
+    title: "Notifications Screen",
+    desc: "View activity and notifications page",
+    href: "/notifications" as Href,
+    icon: "notifications-outline" as const,
+  },
+];
 
+export const authScreens: Screen[] = [
+  {
+    title: "Login Screen",
+    desc: "User sign in page",
+    href: "/auth/login" as Href,
+    icon: "log-in-outline" as const,
+  },
+  {
+    title: "Register Screen",
+    desc: "User sign up page",
+    href: "/auth/register" as Href,
+    icon: "person-add-outline" as const,
+  },
+  {
+    title: "Forgot Password Screen",
+    desc: "Password reset request page",
+    href: "/auth/forgot-password" as Href,
+    icon: "key-outline" as const,
+  },
+  {
+    title: "OTP Verification Screen",
+    desc: "Verify OTP code page",
+    href: "/auth/otp-code" as Href,
+    icon: "shield-checkmark-outline" as const,
+  },
+  {
+    title: "Change Password Screen",
+    desc: "Change user password page",
+    href: "/auth/change-password" as Href,
+    icon: "lock-closed-outline" as const,
+  },
+];
+
+export default function IndexPage() {
   return (
-    <View className="flex-1 bg-slate-50">
-      {/* Scrollable Feed Body */}
-      <ScrollView
-        className="flex-1 px-4"
-        contentContainerStyle={{
-          paddingTop: Math.max(insets.top, 16),
-          paddingBottom: 24,
-        }}
-        showsVerticalScrollIndicator={false}
-        keyboardShouldPersistTaps="handled"
-      >
-        {/* Top Header */}
-        <Header />
+    <Container className="bg-white">
+      <View className="items-center px-6 pt-8 pb-10">
+        <Text className="mb-3 text-center font-bold text-3xl text-black">
+          TechZu App Navigation
+        </Text>
+        <Text className="text-center text-base text-default-500 leading-6">
+          Select a screen to view and test available app flows.
+        </Text>
+      </View>
 
-        {/* Search Bar */}
-        <View className="my-3">
-          <SearchBar />
-        </View>
-
-        {/* Create Post Card */}
-        <View className="mb-4">
-          <CreatePostCard />
-        </View>
-
-        {/* Feed Posts */}
-        <PostCard
-          authorName="John Doe"
-          avatarBgColor="bg-emerald-100"
-          avatarText="JD"
-          avatarTextColor="text-emerald-700"
-          commentsCount={5}
-          content={`Our group presentation went really well today!\nProud of the teamwork and effort everyone put in. 🙌`}
-          likesCount={12}
-          timeAgo="2 minutes ago"
-        />
-
-        <PostCard
-          authorName="Sarah Malik"
-          avatarBgColor="bg-amber-100"
-          avatarText="SM"
-          avatarTextColor="text-amber-700"
-          commentsCount={3}
-          content={`Don't forget the math quiz tomorrow.\nLet's all do our best! 💪`}
-          likesCount={8}
-          timeAgo="10 minutes ago"
-        />
-
-        <PostCard
-          authorName="Arafat Rahman"
-          avatarBgColor="bg-purple-100"
-          avatarText="AR"
-          avatarTextColor="text-purple-700"
-          commentsCount={6}
-          content={`Just finished the library project.\nIt's been a long journey but totally worth it! 📚`}
-          likesCount={15}
-          timeAgo="25 minutes ago"
-        />
-
-        <PostCard
-          authorName="Mim Naz"
-          avatarBgColor="bg-sky-100"
-          avatarText="MN"
-          avatarTextColor="text-sky-700"
-          commentsCount={9}
-          content={`Beautiful day on campus today ☀️\nPerfect weather to study outside.`}
-          likesCount={22}
-          timeAgo="1 hour ago"
-        />
-      </ScrollView>
-
-      {/* Fixed Bottom Navigation */}
-      <BottomTabBar />
-    </View>
+      <ShowScreenItems screens={mainScreens} title="Main Screen" />
+      <ShowScreenItems screens={authScreens} title="Auth Screens" />
+    </Container>
   );
 }
+
+const ShowScreenItems = ({
+  screens,
+  title,
+}: {
+  title: string;
+  screens: Screen[];
+}) => (
+  <View className="mb-6 px-6">
+    <Text className="mb-3 font-semibold text-default-400 text-xs uppercase tracking-wider">
+      {title}
+    </Text>
+    {screens.map((item) => (
+      <Link asChild href={item.href} key={item.title}>
+        <Pressable className="flex-row items-center gap-4 rounded-2xl bg-content1 p-4 mb-3 active:opacity-75">
+          <View className="h-10 w-10 items-center justify-center rounded-xl bg-primary/10">
+            <StyledIcons className="text-primary" name={item.icon} size={20} />
+          </View>
+          <View className="flex-1">
+            <Text className="font-semibold text-foreground text-sm">
+              {item.title}
+            </Text>
+            <Text className="mt-0.5 text-default-400 text-xs">{item.desc}</Text>
+          </View>
+          <StyledIcons
+            className="text-default-300"
+            name="chevron-forward"
+            size={16}
+          />
+        </Pressable>
+      </Link>
+    ))}
+  </View>
+);
