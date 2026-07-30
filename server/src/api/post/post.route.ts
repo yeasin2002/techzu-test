@@ -5,7 +5,7 @@ import express, { type Router } from "express";
 import { requireAuth } from "@/middleware/auth.middleware";
 import { validateBody, validateParams, validateQuery } from "@/middleware/validation.middleware";
 
-import { createComment, createPost, getFeed, toggleLike } from "./post.service";
+import { createComment, createPost, getFeed, getPostComments, toggleLike } from "./post.service";
 import {
   createCommentSchema,
   createPostSchema,
@@ -26,6 +26,9 @@ postRouter.get("/", validateQuery(getPostsQuerySchema), getFeed);
 
 // Toggle like / unlike on post
 postRouter.post("/:id/like", validateParams(postParamsSchema), toggleLike);
+
+// Get comments for a post
+postRouter.get("/:id/comments", validateParams(postParamsSchema), getPostComments);
 
 // Add comment to post
 postRouter.post(

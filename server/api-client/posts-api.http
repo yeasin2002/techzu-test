@@ -9,7 +9,7 @@ POST {{baseUrl}}/api/auth/login
 Content-Type: application/json
 
 {
-  "username": "yeasin_user",
+  "username": "yeasin2002",
   "password": "password123",
   "fcmToken": "fcm_token_sample_123"
 }
@@ -35,7 +35,7 @@ GET {{baseUrl}}/api/posts?page=1&limit=10
 Authorization: Bearer {{token}}
 
 ### 4. Filter Feed by Username
-GET {{baseUrl}}/api/posts?username=yeasin_user
+GET {{baseUrl}}/api/posts?username=yeasin2002
 Authorization: Bearer {{token}}
 
 ### 5. Like / Unlike Post (Toggle)
@@ -50,3 +50,7 @@ Content-Type: application/json
 {
   "text": "Great post! Really proud of this implementation. 🙌"
 }
+
+### 7. Get Comments for a Post
+GET {{baseUrl}}/api/posts/{{postId}}/comments
+Authorization: Bearer {{token}}

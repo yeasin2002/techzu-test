@@ -79,6 +79,29 @@ registry.registerPath({
 });
 
 registry.registerPath({
+  method: "get",
+  path: "/api/posts/{id}/comments",
+  description: "Get all comments for a specific post.",
+  summary: "Get Post Comments",
+  tags: ["Posts"],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: postParamsSchema,
+  },
+  responses: {
+    200: {
+      description: "Comments retrieved successfully",
+    },
+    404: {
+      description: "Post not found",
+    },
+    401: {
+      description: "Unauthorized",
+    },
+  },
+});
+
+registry.registerPath({
   method: "post",
   path: "/api/posts/{id}/comment",
   description: "Add a comment to a post. Triggers FCM push notification to post author.",

@@ -310,3 +310,50 @@ export const createComment: RequestHandler = async (req, res) => {
     return sendInternalError(res, error.message || "Failed to add comment");
   }
 };
+
+/**
+ * Get all comments for a specific post
+ * GET /api/posts/:id/comments
+ */
+export const getPostComments: RequestHandler = async (req, res) => {
+  try {
+    if (!req.user) {
+      return sendUnauthorized(res, "Unauthorized");
+    }
+
+    const postId = String(req.params.id);
+
+    // Verify post exists
+    const [targetPost] = await db
+      .select({ id: posts.id })
+      .from(posts)
+      .where(eq(posts.id, postId))
+      .limit(1);
+
+    if (!targetPost) {
+      return sendNotFound(res, "Post not found");
+    }
+
+    // Fetch comments with user details
+    const commentsList = await db
+      .select({
+        id: comments.id,
+        postId: comments.postId,
+        text: comments.text,
+        createdAt: comments.createdAt,
+        user: {
+          id: users.id,
+          username: users.username,
+        },
+      })
+      .from(comments)
+      .innerJoin(users, eq(comments.userId, users.id))
+      .where(eq(comments.postId, postId))
+      .orderBy(comments.createdAt);
+
+    return sendSuccess(res, 200, "Comments retrieved successfully", commentsList);
+  } catch (error: any) {
+    console.error("❌ [Posts] Get comments error:", error.message || error);
+    return sendInternalError(res, error.message || "Failed to fetch comments");
+  }
+};
