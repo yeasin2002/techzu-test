@@ -38,6 +38,7 @@
     "expo-status-bar": "~55.0.4",
     "expo-web-browser": "~55.0.9",
     "heroui-native": "^1.0.0-rc.3",
+    "ky": "^2.0.2",
     "lefthook": "2.1.4",
     "oxfmt": "^0.40.0",
     "oxlint": "^1.55.0",
