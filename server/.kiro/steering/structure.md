@@ -1,337 +1,119 @@
 # Project Structure
 
-## Root Directory Layout
+## Directory Layout
 
 ```
-providus_org/
-├── src/                    # Source code
-│   ├── db/                 # Database connection and models
-│   │   ├── models/         # Mongoose models
-│   │   │   ├── job.model.ts
-│   │   │   ├── category.model.ts
-│   │   │   ├── location.model.ts
-│   │   │   ├── review.model.ts
-│   │   │   ├── user.model.ts
-│   │   │   ├── job-application-request.model.ts
-│   │   │   └── [model].model.ts
-│   │   └── index.ts        # Database connection and model exports
-│   ├── lib/                # Utility libraries and helpers
-│   ├── helpers/            # Helper functions
-│   │   ├── response-handler.ts  # Standard API response helpers
-│   │   ├── mongodb-error-handler.ts
+src/
+├── api/                  # Feature modules (one folder per domain)
+│   └── [module]/
+│       ├── [module].route.ts       # Express Router — define all routes here
+│       ├── [module].validation.ts  # Zod schemas for body/params/query
+│       ├── [module].openapi.ts     # OpenAPI path/schema registration
+│       └── services/
+│           ├── [module].service.ts # Business logic as RequestHandler functions
+│           └── index.ts            # Barrel export
+├── db/
+│   ├── index.ts                    # Re-exports connectDB
+│   └── models/                     # Mongoose models (one file per model)
+├── data/
+│   └── index.ts                    # Static / seed data
+├── helpers/
+│   ├── response-handler.ts         # sendSuccess, sendError, sendCreated, etc.
+│   ├── mongodb-error-handler.ts    # exceptionErrorHandler, validateObjectIds
+│   └── index.ts
+├── lib/
+│   ├── openapi.ts                  # Shared OpenAPI registry + generateOpenAPIDocument()
+│   ├── jwt.ts                      # signAccessToken, signRefreshToken, verifyAccessToken, generateOTP
+│   ├── connect-mongo.ts            # connectDB()
+│   ├── multer.ts                   # Multer upload config
+│   ├── nodemailer.ts               # Email transport
+│   ├── logger.ts                   # Winston logger
+│   ├── morgan.ts                   # Morgan format config
+│   └── index.ts                    # Barrel export for all lib utilities
+├── middleware/
+│   ├── auth.middleware.ts          # requireAuth, requireRole, requireAnyRole, requireOwnership, optionalAuth
+│   ├── validation.middleware.ts    # validateBody, validateParams, validateQuery, validate
+│   ├── common/
+│   │   ├── global-error-handler.ts
+│   │   ├── default-not-found.ts
 │   │   └── index.ts
-│   ├── middleware/         # Express middleware
-│   │   ├── auth.middleware.ts
-│   │   ├── validation.middleware.ts
-│   │   ├── error.middleware.ts
-│   │   └── index.ts
-│   ├── common/             # Common constants and utilities
-│   │   ├── email/          # Email templates
-│   │   ├── validations/    # Common zod validation schemas
-│   │   ├── service/        # Common services that can be used in multiple modules
-│   │   └── constants.ts    # Centralized API tags and paths
-│   ├── api/                # API route handlers
-│   │   ├── auth/           # Authentication module
-│   │   │   ├── auth.route.ts
-│   │   │   ├── services/   # Service handlers (business logic)
-│   │   │   │   ├── index.ts          # Export all services
-│   │   │   │   ├── login.service.ts
-│   │   │   │   ├── register.service.ts
-│   │   │   │   ├── forgot-password.service.ts
-│   │   │   │   ├── reset-password.service.ts
-│   │   │   │   └── verify-otp.service.ts
-│   │   │   ├── auth.validation.ts
-│   │   │   └── auth.openapi.ts
-│   │   ├── category/       # Category module (uses single service file pattern)
-│   │   │   ├── category.route.ts
-│   │   │   ├── category.service.ts
-│   │   │   ├── category.validation.ts
-│   │   │   └── category.openapi.ts
-│   │   ├── job/            # Job module (uses services folder pattern)
-│   │   │   ├── job.route.ts
-│   │   │   ├── services/
-│   │   │   │   ├── index.ts
-│   │   │   │   ├── create-job.service.ts
-│   │   │   │   ├── get-all-jobs.service.ts
-│   │   │   │   └── [other-services].service.ts
-│   │   │   ├── job.validation.ts
-│   │   │   └── job.openapi.ts
-│   │   ├── job-request/    # Job application request module
-│   │   ├── location/       # Location module
-│   │   ├── users/          # User management module
-│   │   ├── common/         # Common endpoints (e.g., file upload)
-│   │   ├── admin/          # Admin module (nested structure)
-│   │   │   ├── auth-admin/ # Admin authentication sub-module
-│   │   │   │   ├── auth-admin.route.ts
-│   │   │   │   ├── services/
-│   │   │   │   │   ├── index.ts
-│   │   │   │   │   └── login.service.ts
-│   │   │   │   ├── auth-admin.validation.ts
-│   │   │   │   └── auth-admin.openapi.ts
-│   │   │   ├── admin-user/       # Admin user management sub-module
-│   │   │   │   ├── admin-user.route.ts
-│   │   │   │   ├── services/
-│   │   │   │   │   ├── index.ts
-│   │   │   │   │   ├── get-all-users.service.ts
-│   │   │   │   │   ├── get-user.service.ts
-│   │   │   │   │   ├── delete-user.service.ts
-│   │   │   │   │   └── suspend-user.service.ts
-│   │   │   │   ├── user.validation.ts
-│   │   │   │   └── user.openapi.ts
-│   │   │   ├── dashboard/  # Admin dashboard sub-module
-│   │   │   ├── job/        # Admin job management sub-module
-│   │   │   ├── payments/   # Admin payments sub-module
-│   │   │   └── settings/   # Admin settings sub-module
-│   │   └── [other modules]/
-│   │
-│   └── app.ts              # Application entry point
-├── api-client/             # API client code (HTTP test files)
-│   ├── user-api.http
-│   ├── auth-api.http
-│   └── [module]-api.http
-├── script/                 # Utility scripts
-│   └── generate-module.js  # Module generator script
-├── .kiro/                  # Kiro AI assistant configuration
-│   └── steering/           # Steering documentation
-├── .husky/                 # Git hooks configuration
-├── .ruler/                 # Code quality rules
-├── node_modules/           # Dependencies
-├── dist/                   # Build output (generated)
-└── [config files]          # Various configuration files
+│   └── index.ts
+└── app.ts                          # Express app setup, middleware, routes, server start
+
+api-client/                         # .http test files (one per module)
+uploads/                            # Uploaded files (local storage)
+script/
+└── generate-module.js              # Module scaffolding CLI
+docs/                               # Developer documentation
 ```
 
-## Source Code Organization
+## Module Conventions
 
-### `/src/app.ts`
+Every feature lives under `src/api/[module]/` and follows this exact pattern:
 
-- Main application entry point
-- Express app configuration
-- CORS setup
-- Server initialization and database connection
+### `[module].route.ts`
 
-### `/src/db/`
+- Import `./[module].openapi` at the top (side-effect import — required for OpenAPI registration)
+- Create and export a named `Router` instance
+- Apply `validateBody` / `validateParams` / `validateQuery` middleware before handlers
 
-- **`index.ts`**: Database connection logic (`connectDB` function) and model exports
-- **`models/`**: Mongoose models and schemas
-  - Each model file exports a Mongoose model (e.g., `User`, `Job`, `Category`)
-  - Models are imported and exported through `db` object in `index.ts`
-  - Example: `export const db = { user: User, job: Job, category: Category }`
+### `[module].validation.ts`
 
-### `/src/common/` - Shared Resources
+- Call `extendZodWithOpenApi(z)` once at the top
+- Export named Zod schemas (e.g. `CreateUserSchema`, `UserParamsSchema`)
+- Add `.openapi({ description: "..." })` to fields that need API docs metadata
 
-#### `constants.ts` - Centralized Configuration
+### `[module].openapi.ts`
 
-Contains centralized constants for the entire application:
+- Import `registry` from `@/lib/openapi`
+- Call `registry.register(...)` for reusable schemas
+- Call `registry.registerPath(...)` for each route
+- **Must be side-effect imported in the route file** so it runs before `generateOpenAPIDocument()`
 
-- **openAPITags**: Defines all API paths and OpenAPI tags
-  - Prevents hardcoded paths throughout the codebase
-  - Single source of truth for API documentation
-  - Easy to refactor and maintain
-  - Supports nested structures for complex modules
-  - Example: `openAPITags.authentication.basepath` → `"/api/auth"`
-  - Example nested: `openAPITags.admin.user_management.basepath` → `"/api/admin/users"`
-- **mediaTypeFormat**: Common media type constants
-  - `json`: "application/json"
-  - `form`: "multipart/form-data"
+### `services/[module].service.ts`
 
-#### `email/` - Email Templates
+- Export async `RequestHandler` functions (named exports)
+- Use `sendSuccess`, `sendCreated`, `sendError`, etc. from `@/helpers` for all responses
+- Wrap DB calls in try/catch and delegate to `exceptionErrorHandler` for Mongoose errors
 
-- Reusable email templates using nodemailer
-- Examples: `otp-email.ts`, `welcome-email.ts`
+## Response Pattern
 
-#### `validations/` - Common Validation Schemas
+Always use helpers from `@/helpers/response-handler`:
 
-- Shared Zod validation schemas used across multiple modules
-- Examples: `mongodb-id.validation.ts`, `param.validation.ts`, `response.validation.ts`
-- Reduces duplication and ensures consistency
-
-#### `service/` - Common Services
-
-- Shared business logic that can be used across multiple modules
-- Example: `get-users.service.ts` for fetching user data from different contexts
-
-### `/src/api/**/*` - Module Structure
-
-Each API module follows this pattern:
-
-#### `[module].route.ts`
-
-- Express router with route definitions
-- Imports validation middleware
-- Imports service handlers
-- Exports router instance with descriptive name
-- Example: `export const auth: Router = express.Router();`
-- For nested modules: `export const adminUser: Router = express.Router();`
-
-#### `services/` folder
-
-- Contains individual service handler files
-- Each file handles specific business logic (e.g., `login.service.ts`, `register.service.ts`)
-- Keeps code organized and maintainable
-- **`index.ts`**: Barrel export file that exports all services
-- **`[action].service.ts`**: Individual service handlers as RequestHandler functions
-
-**Benefits of services folder:**
-
-- Better code organization for large modules
-- Easier to locate specific functionality
-- Reduces file size and complexity
-- Improves maintainability and testability
-- Clear separation of concerns
-
-**Example structure:**
-
-```
-auth/
-├── services/
-│   ├── index.ts                    # export * from "./login.service"
-│   ├── login.service.ts            # export const login: RequestHandler
-│   ├── register.service.ts         # export const register: RequestHandler
-│   ├── forgot-password.service.ts  # export const forgotPassword: RequestHandler
-│   └── reset-password.service.ts   # export const resetPassword: RequestHandler
+```ts
+sendSuccess(res, 200, "Users fetched", data);
+sendCreated(res, "User created", data);
+sendBadRequest(res, "Validation failed", errors);
+sendUnauthorized(res, "Token required");
+sendNotFound(res, "User not found");
+sendInternalError(res, "Something went wrong");
+// or via exceptionErrorHandler for Mongoose errors:
+exceptionErrorHandler(error, res, "Failed to fetch user");
 ```
 
-#### `[module].validation.ts`
+## Auth Middleware
 
-- Zod validation schemas with OpenAPI extensions
-- TypeScript type exports
-- Schemas for: create, update, params, responses
-
-#### `[module].openapi.ts`
-
-- Registers schemas with OpenAPI registry
-- Registers route paths with full documentation
-- Uses centralized constants from `@/common/constants`
-- Must be imported at the top of the corresponding `.route.ts` file
-- Example: `import "./user.openapi";`
-
-**Important**: OpenAPI files are imported in route files, which are then imported in `app.ts` BEFORE calling `generateOpenAPIDocument()` to ensure all routes are registered.
-
-### Nested Module Pattern
-
-For complex features like admin panel, use nested modules:
-
-```
-src/api/admin/
-├── user/           # Sub-module for user management
-│   ├── user.route.ts
-│   ├── services/
-│   │   ├── index.ts
-│   │   ├── get-all-users.service.ts
-│   │   ├── get-user.service.ts
-│   │   ├── delete-user.service.ts
-│   │   └── suspend-user.service.ts
-│   ├── user.validation.ts
-│   └── user.openapi.ts
-├── dashboard/      # Sub-module for dashboard
-└── settings/       # Sub-module for settings
+```ts
+requireAuth; // Validates Bearer JWT, sets req.user
+requireRole("admin"); // Exact role match
+requireAnyRole(["customer", "contractor"]); // Multiple allowed roles
+requireOwnership("id"); // req.user.userId must match req.params.id (admin bypasses)
+optionalAuth; // Attaches req.user if token present, never rejects
 ```
 
-**Registration in app.ts:**
+`req.user` shape: `{ userId: string, email: string, role: "customer" | "contractor" | "admin" }`
 
-```typescript
-import { adminUser } from "@/api/admin/user/user.route";
-app.use("/api/admin/users", adminUser);
-```
+## Naming Conventions
 
-**Export naming convention for nested modules:**
+- **Folders**: kebab-case (`auth-tokens/`)
+- **Files**: camelCase (`example.service.ts`)
+- **Exports**: named exports preferred; barrel `index.ts` in each folder
+- **Imports**: always use `@/` alias (never relative `../../`)
+- **API routes**: `/api/[module]/...` pattern
 
-- Use descriptive names that indicate the parent module
-- Example: `adminUser`, `adminDashboard`, `adminSettings`
-- This prevents naming conflicts with top-level modules
+## Adding a New Module
 
-### `/src/helpers/` - Response and Error Handlers
-
-Contains utility functions for consistent API responses:
-
-#### `response-handler.ts`
-
-- **Standard Response Format**: All API responses follow this structure:
-
-  ```typescript
-  {
-    status: number,
-    message: string,
-    data: any | null,
-    success: boolean,
-    errors?: Array<{ path: string; message: string }>
-  }
-  ```
-
-- **Helper Functions**:
-
-  - `sendSuccess(res, statusCode, message, data)` - Success responses
-  - `sendError(res, statusCode, message, errors?)` - Error responses
-  - `sendCreated(res, message, data)` - 201 Created
-  - `sendBadRequest(res, message, errors?)` - 400 Bad Request
-  - `sendUnauthorized(res, message)` - 401 Unauthorized
-  - `sendForbidden(res, message)` - 403 Forbidden
-  - `sendNotFound(res, message)` - 404 Not Found
-  - `sendInternalError(res, message)` - 500 Internal Server Error
-
-- **ResponseHandler Class**: Chainable response handler for cleaner code
-
-#### `mongodb-error-handler.ts`
-
-- Handles MongoDB-specific errors (duplicate keys, validation errors, etc.)
-- Converts MongoDB errors to user-friendly messages
-
-### `/src/middleware/` - Express Middleware
-
-#### `auth.middleware.ts`
-
-- **`requireAuth`**: Verifies JWT access token, adds user to `req.user`
-- **`requireRole(role)`**: Checks if user has specific role (customer, contractor, admin)
-- **`requireAnyRole(roles[])`**: Checks if user has any of the specified roles
-- **`requireOwnership(userIdParam)`**: Ensures user can only access their own resources
-- **`optionalAuth`**: Adds user data if token present, but doesn't require it
-
-#### `validation.middleware.ts`
-
-- **`validateBody(schema)`**: Validates request body against Zod schema
-- **`validateParams(schema)`**: Validates route parameters
-- **`validateQuery(schema)`**: Validates query parameters
-
-#### `error.middleware.ts`
-
-- **`notFoundHandler`**: Handles 404 errors for undefined routes
-- **`errorHandler`**: Global error handler for uncaught errors
-
-## Configuration Files
-
-### Core Config
-
-- `package.json` - Dependencies and scripts
-- `tsconfig.json` - TypeScript configuration with path aliases
-- `tsdown.config.ts` - Build tool configuration
-
-### Code Quality
-
-- `.oxlintrc.json` - Linting rules (comprehensive oxlint setup)
-- `.husky/pre-commit` - Git pre-commit hooks
-- `lint-staged` configuration in package.json
-
-### Environment
-
-- `.env` - Environment variables (not tracked)
-- `.env.example` - Environment template
-
-## Architectural Patterns
-
-### Module Organization
-
-- Separate concerns: database, routing, main app
-- Use path aliases (`@/`) for clean imports
-- Export typed router interfaces for type safety
-
-### File Naming
-
-- Use kebab-case for directories when needed
-- Use camelCase for TypeScript files
-- Index files for clean module exports
-
-### Import/Export Style
-
-- ES modules throughout
-- Named exports preferred
-- Barrel exports from index files
+1. Run `pnpm generate:module` to scaffold boilerplate, **or** create files manually
+2. Register the router in `src/app.ts`: `app.use("/api/[module]", moduleRouter)`
+3. The OpenAPI import in the route file handles doc registration automatically
+4. Add a `api-client/[module]-api.http` file for manual testing
