@@ -1,6 +1,4 @@
 import Constants from "expo-constants";
-import { createEnv } from "@t3-oss/env-core";
-import { z } from "zod";
 
 const getDynamicServerUrl = (): string => {
   const envUrl = process.env.EXPO_PUBLIC_SERVER_URL;
@@ -30,14 +28,6 @@ const getDynamicServerUrl = (): string => {
   return envUrl || "http://10.0.2.2:48217/api";
 };
 
-export const env = createEnv({
-  clientPrefix: "EXPO_PUBLIC_",
-  client: {
-    EXPO_PUBLIC_SERVER_URL: z
-      .string()
-      .url()
-      .default(getDynamicServerUrl()),
-  },
-  runtimeEnv: process.env,
-  emptyStringAsUndefined: true,
-});
+export const env = {
+  EXPO_PUBLIC_SERVER_URL: getDynamicServerUrl(),
+};

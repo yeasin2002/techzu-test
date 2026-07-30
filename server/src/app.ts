@@ -62,7 +62,7 @@ app.use(notFoundHandler);
 app.use(errorHandler);
 
 const port = process.env.PORT || 5000;
-app.listen(port, async () => {
+app.listen(Number(port), "0.0.0.0", async () => {
   await connectDB();
 
   console.log(`🚀 Server is running on port http://localhost:${port}`);
