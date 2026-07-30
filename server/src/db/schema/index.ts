@@ -1,4 +1,7 @@
-// Drizzle ORM Schema Definitions
-// Export all table schemas, relations, and enums from this file
+// Drizzle ORM Schema & Relations Barrel Exports
 
+export * from "./comment.schema";
+export * from "./like.schema";
+export * from "./post.schema";
+export * from "./relations";
 export * from "./user.schema";
