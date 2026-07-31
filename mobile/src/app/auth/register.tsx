@@ -11,7 +11,6 @@ import { useSignup } from "@/api/api-hooks/auth.api-hook";
 import { Container } from "@/components/container";
 import { useAuth } from "@/contexts/auth-context";
 import { AuthHeader } from "@/feature/auth-header";
-import { SocialAuth } from "@/feature/social-auth";
 import { StyledIcons } from "@/lib";
 
 const registerSchema = z

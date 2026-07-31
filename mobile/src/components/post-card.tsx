@@ -1,78 +1,113 @@
 import { Ionicons } from "@expo/vector-icons";
+import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 
+import { useToggleLike } from "@/api/api-hooks/post.api-hook";
+import type { Post } from "@/api/query-list/post.query";
+
 type PostCardProps = {
-  authorName?: string;
-  timeAgo?: string;
-  avatarText?: string;
-  avatarBgColor?: string;
-  avatarTextColor?: string;
-  content?: string;
-  likesCount?: number;
-  commentsCount?: number;
+  post: Post;
+  isOwnPost?: boolean;
 };
 
-export function PostCard({
-  authorName = "John Doe",
-  timeAgo = "2 minutes ago",
-  avatarText = "JD",
-  avatarBgColor = "bg-emerald-100",
-  avatarTextColor = "text-emerald-700",
-  content = "Our group presentation went really well today!\nProud of the teamwork and effort everyone put in. 🙌",
-  likesCount = 12,
-  commentsCount = 5,
-}: PostCardProps) {
+function formatTimeAgo(dateString?: string): string {
+  if (!dateString) return "just now";
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+
+  if (diffInSeconds < 60) return "just now";
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours}h ago`;
+  const diffInDays = Math.floor(diffInHours / 24);
+  return `${diffInDays}d ago`;
+}
+
+export function PostCard({ post, isOwnPost = false }: PostCardProps) {
+  const { mutate: toggleLike } = useToggleLike();
+  const [isLiked, setIsLiked] = useState(post.isLiked);
+  const [likesCount, setLikesCount] = useState(post.likesCount);
+
+  useEffect(() => {
+    setIsLiked(post.isLiked);
+    setLikesCount(post.likesCount);
+  }, [post.isLiked, post.likesCount]);
+
+  const handleLike = () => {
+    const nextIsLiked = !isLiked;
+    setIsLiked(nextIsLiked);
+    setLikesCount((prev) => (nextIsLiked ? prev + 1 : Math.max(0, prev - 1)));
+
+    toggleLike(post.id, {
+      onError: () => {
+        setIsLiked(post.isLiked);
+        setLikesCount(post.likesCount);
+      },
+    });
+  };
+
+  const authorName = post.author.username;
+  const timeAgo = formatTimeAgo(post.createdAt);
+
   return (
     <View className="rounded-2xl bg-white p-4 border border-slate-100 shadow-sm shadow-slate-200/50 mb-4">
       {/* Post Header */}
       <View className="flex-row items-center justify-between">
         <View className="flex-row items-center space-x-3 gap-3">
-          {/* Avatar */}
-          <View className={`h-10 w-10 items-center justify-center rounded-full ${avatarBgColor}`}>
-            <Text className={`text-sm font-semibold ${avatarTextColor}`}>{avatarText}</Text>
-          </View>
-
-          {/* Author info */}
           <View>
-            <Text className="text-sm font-bold text-slate-900">{authorName}</Text>
-            <View className="flex-row items-center space-x-1 gap-1 mt-0.5">
-              <Text className="text-xs text-slate-400">{timeAgo}</Text>
-              <Ionicons name="earth" size={12} color="#94A3B8" />
-            </View>
+            <Text className="text-sm font-bold text-slate-900">
+              {authorName}
+            </Text>
+            <Text className="text-xs text-slate-400 mt-0.5">{timeAgo}</Text>
           </View>
         </View>
 
-        {/* Options Menu Button */}
-        <TouchableOpacity activeOpacity={0.7} className="p-1">
-          <Ionicons name="ellipsis-horizontal" size={18} color="#94A3B8" />
-        </TouchableOpacity>
+        {/* Options Menu Button (Only for author's own posts) */}
+        {isOwnPost && (
+          <TouchableOpacity activeOpacity={0.7} className="p-1">
+            <Ionicons name="ellipsis-horizontal" size={18} color="#94A3B8" />
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Post Content */}
       <Text className="mt-3 mb-4 text-sm leading-5 text-slate-700 font-normal">
-        {content}
+        {post.text}
       </Text>
 
       {/* Post Footer Actions */}
-      <View className="flex-row items-center justify-between pt-1">
+      <View className="flex-row items-center justify-between pt-1 border-t border-slate-50">
         <View className="flex-row items-center space-x-6 gap-6">
-          {/* Like Button (Smooth Emerald Green Heart) */}
-          <TouchableOpacity activeOpacity={0.7} className="flex-row items-center">
-            <Ionicons name="heart" size={20} color="#059669" />
-            <Text className="ml-1.5 text-xs font-semibold text-slate-600">{likesCount}</Text>
+          {/* Like Button */}
+          <TouchableOpacity
+            activeOpacity={0.7}
+            className="flex-row items-center"
+            onPress={handleLike}
+          >
+            <Ionicons
+              name={isLiked ? "heart" : "heart-outline"}
+              size={20}
+              color={isLiked ? "#059669" : "#64748B"}
+            />
+            <Text
+              className={`ml-1.5 text-xs font-semibold ${
+                isLiked ? "text-emerald-600" : "text-slate-600"
+              }`}
+            >
+              {likesCount}
+            </Text>
           </TouchableOpacity>
 
-          {/* Comment Button */}
-          <TouchableOpacity activeOpacity={0.7} className="flex-row items-center">
+          {/* Comment Count */}
+          <View className="flex-row items-center">
             <Ionicons name="chatbubble-outline" size={18} color="#64748B" />
-            <Text className="ml-1.5 text-xs font-semibold text-slate-600">{commentsCount}</Text>
-          </TouchableOpacity>
+            <Text className="ml-1.5 text-xs font-semibold text-slate-600">
+              {post.commentsCount}
+            </Text>
+          </View>
         </View>
-
-        {/* Bookmark Button */}
-        <TouchableOpacity activeOpacity={0.7} className="p-1">
-          <Ionicons name="bookmark-outline" size={20} color="#64748B" />
-        </TouchableOpacity>
       </View>
     </View>
   );

@@ -22,6 +22,7 @@
     "@hookform/resolvers": "^5.5.7",
     "@react-navigation/drawer": "^7.3.9",
     "@react-navigation/elements": "^2.8.1",
+    "@shopify/flash-list": "2.0.2",
     "@t3-oss/env-core": "^0.13.10",
     "@tanstack/react-query": "^5.101.4",
     "check-types": "^11.2.3",

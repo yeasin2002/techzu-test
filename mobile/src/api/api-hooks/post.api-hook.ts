@@ -5,6 +5,7 @@ import {
   postApi,
   type CreateCommentData,
   type CreatePostData,
+  type PostFeedResponse,
   type PostFilters,
 } from "../query-list/post.query";
 
@@ -29,7 +30,33 @@ export const useCreatePost = () => {
   return useMutation({
     mutationFn: (data: CreatePostData) => postApi.create(data),
     onSuccess: async (response) => {
-      await queryClient.invalidateQueries({ queryKey: POST_KEYS.all() });
+      if (response?.data) {
+        // Prepend new post into active feed cache instantly
+        queryClient.setQueriesData<PostFeedResponse>(
+          { queryKey: POST_KEYS.all() },
+          (old) => {
+            if (!old || !old.data) return old;
+            const newPost = response.data;
+            if (old.data.posts.some((p) => p.id === newPost.id)) return old;
+            return {
+              ...old,
+              data: {
+                ...old.data,
+                posts: [newPost, ...old.data.posts],
+                pagination: {
+                  ...old.data.pagination,
+                  total: (old.data.pagination.total || 0) + 1,
+                },
+              },
+            };
+          },
+        );
+      }
+      // Re-fetch posts in background to ensure sync
+      await queryClient.invalidateQueries({
+        queryKey: POST_KEYS.all(),
+        refetchType: "all",
+      });
       toast.success(response.message || "Post created successfully");
     },
     onError: async (error) => {
