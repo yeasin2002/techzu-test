@@ -1,11 +1,18 @@
 import { kyClient } from "@/lib/ky";
 
+export interface UserStats {
+  postsCount: number;
+  likesCount: number;
+  commentsCount: number;
+}
+
 export interface User {
   id: string;
   fullName: string;
   email: string;
   username: string;
   createdAt: string;
+  stats?: UserStats;
 }
 
 export interface AuthData {

@@ -1,7 +1,7 @@
 import type { RequestHandler } from "express";
-import { eq, or } from "drizzle-orm";
+import { count, eq, or } from "drizzle-orm";
 
-import { db, users } from "@/db";
+import { comments, db, likes, posts, users } from "@/db";
 import {
   sendBadRequest,
   sendCreated,
@@ -167,7 +167,35 @@ export const getMe: RequestHandler = async (req, res) => {
       return sendNotFound(res, "User not found");
     }
 
-    return sendSuccess(res, 200, "Profile retrieved successfully", { user });
+    // Calculate user profile stats
+    const [postsCountResult] = await db
+      .select({ count: count() })
+      .from(posts)
+      .where(eq(posts.authorId, user.id));
+
+    const [likesCountResult] = await db
+      .select({ count: count() })
+      .from(likes)
+      .innerJoin(posts, eq(likes.postId, posts.id))
+      .where(eq(posts.authorId, user.id));
+
+    const [commentsCountResult] = await db
+      .select({ count: count() })
+      .from(comments)
+      .where(eq(comments.userId, user.id));
+
+    const stats = {
+      postsCount: Number(postsCountResult?.count || 0),
+      likesCount: Number(likesCountResult?.count || 0),
+      commentsCount: Number(commentsCountResult?.count || 0),
+    };
+
+    return sendSuccess(res, 200, "Profile retrieved successfully", {
+      user: {
+        ...user,
+        stats,
+      },
+    });
   } catch (error: any) {
     console.error("❌ [Auth] GetMe error:", error.message || error);
     return sendInternalError(res, error.message || "Failed to fetch profile");

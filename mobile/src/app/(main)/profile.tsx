@@ -35,6 +35,10 @@ export default function ProfilePage() {
     .slice(0, 2)
     .toUpperCase();
 
+  const postsCount = user?.stats?.postsCount ?? 0;
+  const likesCount = user?.stats?.likesCount ?? 0;
+  const commentsCount = user?.stats?.commentsCount ?? 0;
+
   return (
     <View className="flex-1 bg-slate-50">
       <ScrollView
@@ -72,17 +76,17 @@ export default function ProfilePage() {
           {/* Stats Row */}
           <View className="flex-row items-center justify-around w-full mt-6 pt-5 border-t border-slate-100">
             <View className="items-center">
-              <Text className="text-base font-bold text-slate-900">12</Text>
+              <Text className="text-base font-bold text-slate-900">{postsCount}</Text>
               <Text className="text-xs text-slate-400 mt-0.5">Posts</Text>
             </View>
             <View className="h-6 w-px bg-slate-100" />
             <View className="items-center">
-              <Text className="text-base font-bold text-slate-900">148</Text>
+              <Text className="text-base font-bold text-slate-900">{likesCount}</Text>
               <Text className="text-xs text-slate-400 mt-0.5">Likes</Text>
             </View>
             <View className="h-6 w-px bg-slate-100" />
             <View className="items-center">
-              <Text className="text-base font-bold text-slate-900">34</Text>
+              <Text className="text-base font-bold text-slate-900">{commentsCount}</Text>
               <Text className="text-xs text-slate-400 mt-0.5">Comments</Text>
             </View>
           </View>
