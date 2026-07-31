@@ -4,7 +4,6 @@ import { and, count, desc, eq } from "drizzle-orm";
 import { comments, db, likes, posts, users } from "@/db";
 import {
   sendCreated,
-  sendForbidden,
   sendInternalError,
   sendNotFound,
   sendSuccess,
@@ -356,50 +355,6 @@ export const getPostComments: RequestHandler = async (req, res) => {
   } catch (error: any) {
     console.error("❌ [Posts] Get comments error:", error.message || error);
     return sendInternalError(res, error.message || "Failed to fetch comments");
-  }
-};
-
-/**
- * Delete a post (author only)
- * DELETE /api/posts/:id
- */
-export const deletePost: RequestHandler = async (req, res) => {
-  try {
-    if (!req.user) {
-      return sendUnauthorized(res, "Unauthorized");
-    }
-
-    const postId = String(req.params.id);
-    const currentUserId = req.user.userId;
-
-    // Check if post exists
-    const [targetPost] = await db
-      .select({ id: posts.id, authorId: posts.authorId })
-      .from(posts)
-      .where(eq(posts.id, postId))
-      .limit(1);
-
-    if (!targetPost) {
-      return sendNotFound(res, "Post not found");
-    }
-
-    if (targetPost.authorId !== currentUserId) {
-      return sendForbidden(res, "You can only delete your own posts");
-    }
-
-    // Delete related likes & comments
-    await db.delete(likes).where(eq(likes.postId, postId));
-    await db.delete(comments).where(eq(comments.postId, postId));
-
-    // Delete post
-    await db.delete(posts).where(eq(posts.id, postId));
-
-    console.log(`🗑️ [Posts] User ${req.user.username} deleted post ${postId}`);
-
-    return sendSuccess(res, 200, "Post deleted successfully", { id: postId });
-  } catch (error: any) {
-    console.error("❌ [Posts] Delete post error:", error.message || error);
-    return sendInternalError(res, error.message || "Failed to delete post");
   }
 };
 

@@ -8,7 +8,6 @@ import { validateBody, validateParams, validateQuery } from "@/middleware/valida
 import {
   createComment,
   createPost,
-  deletePost,
   getFeed,
   getPostComments,
   toggleLike,
@@ -44,6 +43,3 @@ postRouter.post(
   validateBody(createCommentSchema),
   createComment,
 );
-
-// Delete post (author only)
-postRouter.delete("/:id", validateParams(postParamsSchema), deletePost);

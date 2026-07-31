@@ -1,14 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Popover } from "heroui-native";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
-import { useDeletePost, useToggleLike } from "@/api/api-hooks/post.api-hook";
+import { useToggleLike } from "@/api/api-hooks/post.api-hook";
 import type { Post } from "@/api/query-list/post.query";
 
 type PostCardProps = {
   post: Post;
-  isOwnPost?: boolean;
 };
 
 function formatTimeAgo(dateString?: string): string {
@@ -26,9 +24,8 @@ function formatTimeAgo(dateString?: string): string {
   return `${diffInDays}d ago`;
 }
 
-export function PostCard({ post, isOwnPost = false }: PostCardProps) {
+export function PostCard({ post }: PostCardProps) {
   const { mutate: toggleLike } = useToggleLike();
-  const { mutate: deletePost, isPending: isDeleting } = useDeletePost();
   const [isLiked, setIsLiked] = useState(post.isLiked);
   const [likesCount, setLikesCount] = useState(post.likesCount);
 
@@ -50,11 +47,6 @@ export function PostCard({ post, isOwnPost = false }: PostCardProps) {
     });
   };
 
-  const handleDelete = () => {
-    if (isDeleting) return;
-    deletePost(post.id);
-  };
-
   const authorName = post.author.username;
   const timeAgo = formatTimeAgo(post.createdAt);
 
@@ -70,39 +62,6 @@ export function PostCard({ post, isOwnPost = false }: PostCardProps) {
             <Text className="text-xs text-slate-400 mt-0.5">{timeAgo}</Text>
           </View>
         </View>
-
-        {/* Options Menu Button (Only for author's own posts) */}
-        {isOwnPost && (
-          <Popover>
-            <Popover.Trigger>
-              <TouchableOpacity activeOpacity={0.7} className="p-1">
-                <Ionicons name="ellipsis-horizontal" size={18} color="#94A3B8" />
-              </TouchableOpacity>
-            </Popover.Trigger>
-            <Popover.Portal>
-              <Popover.Overlay />
-              <Popover.Content presentation="popover" className="p-2 rounded-2xl bg-white border border-slate-100 shadow-md">
-                <TouchableOpacity
-                  activeOpacity={0.7}
-                  className="flex-row items-center gap-2 px-3 py-2 rounded-xl bg-red-50"
-                  disabled={isDeleting}
-                  onPress={handleDelete}
-                >
-                  {isDeleting ? (
-                    <ActivityIndicator color="#DC2626" size="small" />
-                  ) : (
-                    <>
-                      <Ionicons name="trash-outline" size={16} color="#DC2626" />
-                      <Text className="text-xs font-semibold text-red-600">
-                        Delete Post
-                      </Text>
-                    </>
-                  )}
-                </TouchableOpacity>
-              </Popover.Content>
-            </Popover.Portal>
-          </Popover>
-        )}
       </View>
 
       {/* Post Content */}

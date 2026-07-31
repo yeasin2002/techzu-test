@@ -110,7 +110,4 @@ export const postApi = {
 
   addComment: (id: string, data: CreateCommentData) =>
     kyClient.post<CreateCommentResponse>(`posts/${id}/comment`, data),
-
-  delete: (id: string) =>
-    kyClient.delete<{ success: boolean; message: string }>(`posts/${id}`),
 };
