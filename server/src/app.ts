@@ -50,8 +50,7 @@ app.use(
   apiReference({
     theme: "deepSpace",
     content: openApiDocument,
-    favicon: "/uploads/logo.png",
-  })
+  }),
 );
 app.get("/api-docs.json", (_req, res) => {
   res.setHeader("Content-Type", "application/json");

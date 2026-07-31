@@ -28,9 +28,9 @@ export default function FeedPage() {
         <Header />
 
         {/* Search Bar */}
-        <View className="my-3">
+        {/* <View className="my-3">
           <SearchBar />
-        </View>
+        </View> */}
 
         {/* Create Post Card */}
         <View className="mb-4">

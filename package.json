@@ -23,7 +23,6 @@
     }
   },
   "workspaces": [
-    "mobile",
     "server"
   ],
   "dependencies": {

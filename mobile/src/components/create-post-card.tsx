@@ -19,11 +19,6 @@ export function CreatePostCard() {
           placeholder="What's happening today?"
           placeholderTextColor="#94A3B8"
         />
-
-        {/* Emoji / Smiley Icon */}
-        <TouchableOpacity activeOpacity={0.7} className="p-1">
-          <Ionicons name="happy-outline" size={22} color="#94A3B8" />
-        </TouchableOpacity>
       </View>
 
       {/* Divider */}
