@@ -210,8 +210,6 @@ export default function LoginScreen() {
           <View className="h-px flex-1 bg-default-200" />
         </View>
 
-        <SocialAuth />
-
         {/* Sign Up Link */}
         <View className="flex-row items-center justify-center gap-1">
           <Text className="text-default-500 text-sm">

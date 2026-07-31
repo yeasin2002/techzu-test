@@ -28,8 +28,12 @@ export default function ProfilePage() {
     }
   };
 
-  const username = user?.username ?? "User";
-  const initials = username.slice(0, 2).toUpperCase();
+  const fullName = user?.fullName ?? "User Profile";
+  const username = user?.username ?? "";
+  const email = user?.email ?? "";
+  const initials = (user?.fullName || user?.username || "U")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
     <View className="flex-1 bg-slate-50">
@@ -53,10 +57,17 @@ export default function ProfilePage() {
           </View>
 
           {/* User Info */}
-          <Text className="text-xl font-bold text-slate-900">{username}</Text>
-          <Text className="text-xs font-medium text-slate-400 mt-0.5">
-            @{username.toLowerCase()}
-          </Text>
+          <Text className="text-xl font-bold text-slate-900">{fullName}</Text>
+          {Boolean(username) && (
+            <Text className="text-xs font-semibold text-emerald-600 mt-0.5">
+              @{username}
+            </Text>
+          )}
+          {Boolean(email) && (
+            <Text className="text-xs font-medium text-slate-400 mt-0.5">
+              {email}
+            </Text>
+          )}
 
           {/* Stats Row */}
           <View className="flex-row items-center justify-around w-full mt-6 pt-5 border-t border-slate-100">

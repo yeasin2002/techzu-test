@@ -1,4 +1,3 @@
-import { Ionicons } from "@expo/vector-icons";
 import { Text, TextInput, TouchableOpacity, View } from "react-native";
 
 export function CreatePostCard() {

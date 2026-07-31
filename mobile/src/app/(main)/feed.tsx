@@ -6,7 +6,6 @@ import {
   CreatePostCard,
   Header,
   PostCard,
-  SearchBar,
 } from "@/components";
 
 export default function FeedPage() {

@@ -12,7 +12,6 @@ export function BottomTabBar({ activeTab = "feed" }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
 
   const isFeed = activeTab === "feed";
-  const isNotifications = activeTab === "notifications";
   const isProfile = activeTab === "profile";
 
   return (

@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 
 import { db, users } from "@/db";
 import {
@@ -19,17 +19,22 @@ import type { LoginInput, SignupInput } from "./auth.validation";
  */
 export const signup: RequestHandler = async (req, res) => {
   try {
-    const { username, password, fcmToken } = req.body as SignupInput;
+    const { fullName, email, username, password, fcmToken } =
+      req.body as SignupInput;
 
-    // Check if username is already taken
+    // Check if username or email is already taken
     const existingUser = await db
       .select()
       .from(users)
-      .where(eq(users.username, username))
+      .where(or(eq(users.username, username), eq(users.email, email)))
       .limit(1);
 
     if (existingUser.length > 0) {
-      return sendBadRequest(res, "Username is already taken");
+      const match = existingUser[0];
+      if (match.username === username) {
+        return sendBadRequest(res, "Username is already taken");
+      }
+      return sendBadRequest(res, "Email is already registered");
     }
 
     // Hash password
@@ -39,6 +44,8 @@ export const signup: RequestHandler = async (req, res) => {
     const [newUser] = await db
       .insert(users)
       .values({
+        fullName,
+        email,
         username,
         password: hashedPassword,
         fcmToken: fcmToken || null,
@@ -60,6 +67,8 @@ export const signup: RequestHandler = async (req, res) => {
     return sendCreated(res, "User registered successfully", {
       user: {
         id: newUser.id,
+        fullName: newUser.fullName,
+        email: newUser.email,
         username: newUser.username,
         createdAt: newUser.createdAt,
       },
@@ -119,6 +128,8 @@ export const login: RequestHandler = async (req, res) => {
     return sendSuccess(res, 200, "Logged in successfully", {
       user: {
         id: existingUser.id,
+        fullName: existingUser.fullName,
+        email: existingUser.email,
         username: existingUser.username,
         createdAt: existingUser.createdAt,
       },
@@ -143,6 +154,8 @@ export const getMe: RequestHandler = async (req, res) => {
     const [user] = await db
       .select({
         id: users.id,
+        fullName: users.fullName,
+        email: users.email,
         username: users.username,
         createdAt: users.createdAt,
       })

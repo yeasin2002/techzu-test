@@ -11,7 +11,7 @@ registry.registerComponent("securitySchemes", "bearerAuth", {
 registry.registerPath({
   method: "post",
   path: "/api/auth/signup",
-  description: "Register a new user account with username and password",
+  description: "Register a new user account with full name, email, username and password",
   summary: "User Signup",
   tags: ["Auth"],
   request: {

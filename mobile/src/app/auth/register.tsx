@@ -16,6 +16,11 @@ import { StyledIcons } from "@/lib";
 
 const registerSchema = z
   .object({
+    fullName: z.string().min(2, "Full name must be at least 2 characters"),
+    email: z
+      .string()
+      .min(1, "Email is required")
+      .email("Please enter a valid email address"),
     username: z.string().min(3, "Username must be at least 3 characters"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string().min(1, "Please confirm your password"),
@@ -45,6 +50,8 @@ export default function RegisterScreen() {
   } = useForm<RegisterSchemaType>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
+      fullName: "",
+      email: "",
       username: "",
       password: "",
       confirmPassword: "",
@@ -56,6 +63,8 @@ export default function RegisterScreen() {
   const onSubmit = (data: RegisterSchemaType) => {
     signup(
       {
+        fullName: data.fullName,
+        email: data.email,
         username: data.username,
         password: data.password,
       },
@@ -80,6 +89,78 @@ export default function RegisterScreen() {
           desc="Join us and start your journey today"
           title="Create Account!"
         />
+
+        {/* Full Name Field */}
+        <View className="mb-4">
+          <Text className="mb-2 font-semibold text-foreground text-sm">
+            Full Name
+          </Text>
+          <TextField isInvalid={!!errors.fullName}>
+            <Controller
+              control={control}
+              name="fullName"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <InputGroup className="relative h-14 w-full flex-row items-center rounded-2xl border border-[#E5E5E5] bg-white">
+                  <InputGroup.Prefix
+                    className="absolute top-0 bottom-0 left-0 items-center justify-center pr-2 pl-4"
+                    isDecorative
+                  >
+                    <StyledIcons
+                      className="text-muted"
+                      name="person-outline"
+                      size={20}
+                    />
+                  </InputGroup.Prefix>
+                  <InputGroup.Input
+                    className="h-full w-full border-transparent bg-transparent pl-12 text-foreground"
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    placeholder="Enter your full name"
+                    value={value}
+                  />
+                </InputGroup>
+              )}
+            />
+            <FieldError>{errors.fullName?.message}</FieldError>
+          </TextField>
+        </View>
+
+        {/* Email Field */}
+        <View className="mb-4">
+          <Text className="mb-2 font-semibold text-foreground text-sm">
+            Email Address
+          </Text>
+          <TextField isInvalid={!!errors.email}>
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <InputGroup className="relative h-14 w-full flex-row items-center rounded-2xl border border-[#E5E5E5] bg-white">
+                  <InputGroup.Prefix
+                    className="absolute top-0 bottom-0 left-0 items-center justify-center pr-2 pl-4"
+                    isDecorative
+                  >
+                    <StyledIcons
+                      className="text-muted"
+                      name="mail-outline"
+                      size={20}
+                    />
+                  </InputGroup.Prefix>
+                  <InputGroup.Input
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    className="h-full w-full border-transparent bg-transparent pl-12 text-foreground"
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    placeholder="Enter your email address"
+                    value={value}
+                  />
+                </InputGroup>
+              )}
+            />
+            <FieldError>{errors.email?.message}</FieldError>
+          </TextField>
+        </View>
 
         {/* Username Field */}
         <View className="mb-4">
@@ -282,8 +363,6 @@ export default function RegisterScreen() {
           <Text className="text-muted text-sm">Or</Text>
           <View className="h-px flex-1 bg-default-200" />
         </View>
-
-        <SocialAuth />
 
         {/* Sign In Link */}
         <View className="flex-row items-center justify-center gap-1">

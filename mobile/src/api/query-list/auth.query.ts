@@ -2,6 +2,8 @@ import { kyClient } from "@/lib/ky";
 
 export interface User {
   id: string;
+  fullName: string;
+  email: string;
   username: string;
   createdAt: string;
 }
@@ -26,6 +28,8 @@ export interface UserProfileResponse {
 }
 
 export interface SignupData {
+  fullName: string;
+  email: string;
   username: string;
   password: string;
   fcmToken?: string;
