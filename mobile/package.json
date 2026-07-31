@@ -20,12 +20,9 @@
     "@expo/vector-icons": "^15.0.3",
     "@gorhom/bottom-sheet": "^5",
     "@hookform/resolvers": "^5.5.7",
-    "@react-navigation/drawer": "^7.3.9",
-    "@react-navigation/elements": "^2.8.1",
     "@shopify/flash-list": "2.0.2",
     "@t3-oss/env-core": "^0.13.10",
     "@tanstack/react-query": "^5.101.4",
-    "check-types": "^11.2.3",
     "dotenv": "^17.3.1",
     "esbuild": "0.27.4",
     "eslint": "^10.0.3",
@@ -61,7 +58,6 @@
     "tailwindcss": "^4.1.18",
     "typescript": "^5.9.3",
     "uniwind": "^1.4.0",
-    "unrs-resolver": "1.11.1",
     "zod": "^4.3.6"
   },
   "devDependencies": {

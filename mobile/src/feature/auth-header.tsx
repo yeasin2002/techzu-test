@@ -1,20 +1,16 @@
-import { cn } from "heroui-native";
 import { Text, View } from "react-native";
 
-type Props = {
+type AuthHeaderProps = {
   title: string;
   desc: string;
-
   className?: string;
 };
 
-export const AuthHeader = ({ title, desc, className }: Props) => {
+export function AuthHeader({ title, desc, className = "mb-6" }: AuthHeaderProps) {
   return (
-    <View className={cn("mb-10 items-center", className)}>
-      <Text className="mb-2 w-full text-center font-bold text-4xl text-foreground">
-        {title}
-      </Text>
-      <Text className="text-center text-base text-muted">{desc}</Text>
+    <View className={className}>
+      <Text className="text-2xl font-bold text-slate-900">{title}</Text>
+      <Text className="mt-1 text-sm text-slate-500">{desc}</Text>
     </View>
   );
-};
+}
