@@ -1,22 +1,21 @@
 {
   "expo": {
-    "scheme": "expo-starter",
+    "scheme": "techzu",
     "userInterfaceStyle": "light",
     "orientation": "default",
     "web": {
       "bundler": "metro"
     },
-    "name": "expo-starter",
-    "slug": "expo-starter",
-    "plugins": [
-      "expo-font"
-    ],
+    "name": "techzu",
+    "slug": "techzu",
+    "plugins": ["expo-font"],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
     },
     "android": {
-      "package": "com.yeasin.outside.expostarter"
+      "package": "com.yeasin.outside.expostarter",
+      "googleServicesFile": "./google-services.json"
     }
   }
 }

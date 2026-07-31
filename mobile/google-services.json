@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "984721245636",
+    "project_id": "techzu2026",
+    "storage_bucket": "techzu2026.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984721245636:android:2c568e396f44694e821091",
+        "android_client_info": {
+          "package_name": "com.yeasin.outside.expostarter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA-SAQNkYPC2kHSgl7PjnPGwegljsQm7BQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
