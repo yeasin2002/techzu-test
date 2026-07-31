@@ -7,7 +7,11 @@ import * as schema from "./schema";
 
 const connectionString = process.env.DATABASE_URL || "";
 
-export const client = postgres(connectionString);
+export const client = postgres(connectionString, {
+  connect_timeout: 10,
+  idle_timeout: 30,
+  max: 10,
+});
 export const db = drizzle(client, { schema });
 
 /**

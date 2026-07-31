@@ -1,10 +1,9 @@
 import ky from "ky";
 
-import { env } from "./env";
 import { getToken } from "./token";
 
 export const kyInstance = ky.create({
-  prefix: env.EXPO_PUBLIC_SERVER_URL,
+  prefix: process.env.EXPO_PUBLIC_SERVER_URL,
   timeout: 15000,
   hooks: {
     beforeRequest: [

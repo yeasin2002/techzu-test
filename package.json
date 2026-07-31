@@ -23,8 +23,7 @@
     }
   },
   "workspaces": [
-    "server",
-    "mobile"
+    "server"
   ],
   "dependencies": {
     "@scalar/openapi-to-markdown": "^0.5.36"

@@ -1,4 +1,3 @@
-export * from "./env";
 export * from "./error";
 export * from "./ky";
 export * from "./styled-icons";

@@ -15,7 +15,8 @@
     },
     "android": {
       "package": "com.yeasin.outside.expostarter",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./google-services.json",
+      "usesCleartextTraffic": true
     }
   }
 }
