@@ -5,7 +5,14 @@ import express, { type Router } from "express";
 import { requireAuth } from "@/middleware/auth.middleware";
 import { validateBody, validateParams, validateQuery } from "@/middleware/validation.middleware";
 
-import { createComment, createPost, getFeed, getPostComments, toggleLike } from "./post.service";
+import {
+  createComment,
+  createPost,
+  deletePost,
+  getFeed,
+  getPostComments,
+  toggleLike,
+} from "./post.service";
 import {
   createCommentSchema,
   createPostSchema,
@@ -37,3 +44,6 @@ postRouter.post(
   validateBody(createCommentSchema),
   createComment,
 );
+
+// Delete post (author only)
+postRouter.delete("/:id", validateParams(postParamsSchema), deletePost);

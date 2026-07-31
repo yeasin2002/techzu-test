@@ -52,9 +52,13 @@ export const useCreatePost = () => {
           },
         );
       }
-      // Re-fetch posts in background to ensure sync
+      // Re-fetch posts & user profile stats in background to ensure sync
       await queryClient.invalidateQueries({
         queryKey: POST_KEYS.all(),
+        refetchType: "all",
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["auth"],
         refetchType: "all",
       });
       toast.success(response.message || "Post created successfully");
@@ -104,6 +108,47 @@ export const useCreateComment = () => {
     },
     onError: async (error) => {
       const message = await getApiErrorMessage(error, "Failed to add comment");
+      toast.error(message);
+    },
+  });
+};
+
+export const useDeletePost = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: string) => postApi.delete(id),
+    onSuccess: async (response, postId) => {
+      // Optimistically filter out deleted post from feed cache
+      queryClient.setQueriesData<PostFeedResponse>(
+        { queryKey: POST_KEYS.all() },
+        (old) => {
+          if (!old || !old.data) return old;
+          return {
+            ...old,
+            data: {
+              ...old.data,
+              posts: old.data.posts.filter((p) => p.id !== postId),
+              pagination: {
+                ...old.data.pagination,
+                total: Math.max(0, (old.data.pagination.total || 0) - 1),
+              },
+            },
+          };
+        },
+      );
+      await queryClient.invalidateQueries({
+        queryKey: POST_KEYS.all(),
+        refetchType: "all",
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ["auth"],
+        refetchType: "all",
+      });
+      toast.success(response.message || "Post deleted successfully");
+    },
+    onError: async (error) => {
+      const message = await getApiErrorMessage(error, "Failed to delete post");
       toast.error(message);
     },
   });

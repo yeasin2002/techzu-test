@@ -3,12 +3,14 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import {
   Pressable,
+  RefreshControl,
   ScrollView,
   Text,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { useMe } from "@/api/api-hooks/auth.api-hook";
 import { BottomTabBar, Header } from "@/components";
 import { useAuth } from "@/contexts/auth-context";
 
@@ -16,7 +18,16 @@ export default function ProfilePage() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { user, logout } = useAuth();
+  const { token, user: sessionUser, logout } = useAuth();
+
+  // Query live profile details & stats from backend API
+  const {
+    data: profileUser,
+    isRefetching,
+    refetch,
+  } = useMe(Boolean(token));
+
+  const user = profileUser ?? sessionUser;
 
   const handleLogout = async () => {
     try {
@@ -47,6 +58,14 @@ export default function ProfilePage() {
           paddingTop: Math.max(insets.top, 16),
           paddingBottom: 24,
         }}
+        refreshControl={
+          <RefreshControl
+            colors={["#059669"]}
+            onRefresh={refetch}
+            refreshing={isRefetching}
+            tintColor="#059669"
+          />
+        }
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}

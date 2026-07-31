@@ -130,3 +130,29 @@ registry.registerPath({
     },
   },
 });
+
+registry.registerPath({
+  method: "delete",
+  path: "/api/posts/{id}",
+  description: "Delete a post (author only).",
+  summary: "Delete Post",
+  tags: ["Posts"],
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: postParamsSchema,
+  },
+  responses: {
+    200: {
+      description: "Post deleted successfully",
+    },
+    403: {
+      description: "Forbidden (not author)",
+    },
+    404: {
+      description: "Post not found",
+    },
+    401: {
+      description: "Unauthorized",
+    },
+  },
+});
