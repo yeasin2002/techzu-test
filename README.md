@@ -47,10 +47,11 @@ techzu-test/
 - **Platform Tooling**: Expo 55
 - **Navigation**: Expo Router 55 (Typed file-based routing)
 - **State & Data Fetching**: TanStack React Query v5
+- **HTTP Client**: Ky HTTP client with JWT interceptors
 - **Styling**: Uniwind (Tailwind CSS 4) + HeroUI Native
 - **Animations & Gestures**: `react-native-reanimated` 4 & `react-native-gesture-handler`
 - **Secure Token Storage**: `expo-secure-store`
-- **Developer UX**: Automatic dynamic host IP resolution (`getDynamicServerUrl`) for seamless physical device and Android emulator API testing
+- **Android Networking**: Enabled `usesCleartextTraffic` for local development API testing
 
 ---
 
@@ -79,8 +80,6 @@ Responses follow a standard JSON envelope:
 | `POST` | `/api/posts/:id/like` | Toggle like/unlike on a post | ✅ Yes |
 | `GET` | `/api/posts/:id/comments` | Fetch all comments for a post | ✅ Yes |
 | `POST` | `/api/posts/:id/comment` | Add a comment to a post | ✅ Yes |
-| `DELETE` | `/api/posts/:id` | Delete post (Author only) | ✅ Yes |
-| `GET` | `/api/users` | List registered users | ❌ No |
 
 ### 📖 Live API Documentation
 When running the server locally:
@@ -132,7 +131,14 @@ cd server
 bun db:push
 ```
 
-### 4. Running Development Servers
+### 4. Mobile Environment Setup
+Create a `.env` file in the `mobile/` directory:
+```env
+EXPO_PUBLIC_SERVER_URL=http://10.0.2.2:48217/api
+```
+*(Note: Use `http://10.0.2.2:48217/api` for Android Emulator, or `http://<your-pc-ip>:48217/api` for testing on physical devices over Wi-Fi).*
+
+### 5. Running Development Servers
 
 #### Option A: Monorepo Root (Simultaneous Launch)
 From the monorepo root directory:
@@ -177,7 +183,6 @@ For detailed setup instructions, refer to [`server/docs/push-notifications.md`](
 - [`BRD.md`](file:///BRD.md): Product requirement document and architectural specifications.
 - [`server/docs/push-notifications.md`](file:///server/docs/push-notifications.md): FCM notification setup & troubleshooting guide.
 - [`server/docs/openapi-pattern.md`](file:///server/docs/openapi-pattern.md): Standardized OpenAPI & Zod module documentation patterns.
-- [`server/docs/module-generator.md`](file:///server/docs/module-generator.md): Backend API module generator instructions.
 
 ---
 
