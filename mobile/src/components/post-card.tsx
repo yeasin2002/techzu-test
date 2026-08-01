@@ -4,6 +4,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 
 import { useToggleLike } from "@/api/api-hooks/post.api-hook";
 import type { Post } from "@/api/query-list/post.query";
+import CommentSection from "./comment-section";
 
 type PostCardProps = {
   post: Post;
@@ -93,12 +94,7 @@ export function PostCard({ post }: PostCardProps) {
           </TouchableOpacity>
 
           {/* Comment Count */}
-          <View className="flex-row items-center">
-            <Ionicons name="chatbubble-outline" size={18} color="#64748B" />
-            <Text className="ml-1.5 text-xs font-semibold text-slate-600">
-              {post.commentsCount}
-            </Text>
-          </View>
+          <CommentSection postId={post.id} commentsCount={post.commentsCount} />
         </View>
       </View>
     </View>

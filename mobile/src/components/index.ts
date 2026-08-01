@@ -1,3 +1,4 @@
+export * from "./comment-section";
 export * from "./container";
 export * from "./create-post";
 export * from "./header";

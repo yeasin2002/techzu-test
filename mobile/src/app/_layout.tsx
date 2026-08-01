@@ -19,15 +19,15 @@ export default function Layout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <KeyboardProvider>
         <AppThemeProvider>
-          <HeroUINativeProvider
-            config={{ devInfo: { stylingPrinciples: false } }}
-          >
-            <QueryClientProvider client={queryClient}>
-              <AuthProvider>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <HeroUINativeProvider
+                config={{ devInfo: { stylingPrinciples: false } }}
+              >
                 <StackLayout />
-              </AuthProvider>
-            </QueryClientProvider>
-          </HeroUINativeProvider>
+              </HeroUINativeProvider>
+            </AuthProvider>
+          </QueryClientProvider>
         </AppThemeProvider>
       </KeyboardProvider>
     </GestureHandlerRootView>

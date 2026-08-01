@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getApiErrorMessage, toast } from "@/lib";
 import {
   postApi,
+  type CommentListResponse,
   type CreateCommentData,
   type CreatePostData,
   type PostFeedResponse,
@@ -102,6 +103,43 @@ export const useCreateComment = () => {
     mutationFn: ({ id, data }: { id: string; data: CreateCommentData }) =>
       postApi.addComment(id, data),
     onSuccess: async (response, variables) => {
+      if (response?.data) {
+        const newComment = response.data;
+
+        // 1. Instantly append new comment to comments list cache (create list if old is undefined)
+        queryClient.setQueryData<CommentListResponse>(
+          POST_KEYS.comments(variables.id),
+          (old) => {
+            const existingList = old?.data || [];
+            if (existingList.some((c) => c.id === newComment.id)) return old;
+            return {
+              success: true,
+              message: "Comments retrieved successfully",
+              data: [...existingList, newComment],
+            };
+          },
+        );
+
+        // 2. Instantly increment commentsCount in feed list cache
+        queryClient.setQueriesData<PostFeedResponse>(
+          { queryKey: POST_KEYS.all() },
+          (old) => {
+            if (!old || !old.data) return old;
+            return {
+              ...old,
+              data: {
+                ...old.data,
+                posts: old.data.posts.map((post) =>
+                  post.id === variables.id
+                    ? { ...post, commentsCount: (post.commentsCount || 0) + 1 }
+                    : post,
+                ),
+              },
+            };
+          },
+        );
+      }
+
       await queryClient.invalidateQueries({ queryKey: POST_KEYS.comments(variables.id) });
       await queryClient.invalidateQueries({ queryKey: POST_KEYS.all() });
       toast.success(response.message || "Comment added successfully");

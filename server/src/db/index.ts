@@ -28,7 +28,6 @@ export const connectDB = async (): Promise<boolean> => {
     // Execute a lightweight test query
     await client`SELECT 1`;
     console.log("🟢 PostgreSQL database connected successfully!");
-    logger.info("PostgreSQL database connected successfully!");
     return true;
   } catch (error: any) {
     console.error("🔴 PostgreSQL connection error:", error.message || error);
@@ -38,3 +37,4 @@ export const connectDB = async (): Promise<boolean> => {
 };
 
 export * from "./schema";
+
