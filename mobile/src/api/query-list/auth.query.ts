@@ -48,8 +48,19 @@ export interface LoginData {
   fcmToken?: string;
 }
 
+export interface UpdateFcmTokenResponse {
+  success: boolean;
+  message: string;
+  data: {
+    userId: string;
+    fcmToken: string;
+  };
+}
+
 export const authApi = {
   signup: (data: SignupData) => kyClient.post<AuthResponse>("auth/signup", data),
   login: (data: LoginData) => kyClient.post<AuthResponse>("auth/login", data),
   getMe: () => kyClient.get<UserProfileResponse>("auth/me"),
+  updateFcmToken: (fcmToken: string) =>
+    kyClient.post<UpdateFcmTokenResponse>("auth/fcm-token", { fcmToken }),
 };

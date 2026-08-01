@@ -8,6 +8,7 @@ import {
 
 import { useMe } from "@/api/api-hooks/auth.api-hook";
 import type { User } from "@/api/query-list/auth.query";
+import { registerForPushNotificationsAsync } from "@/lib/notifications";
 import { getToken, removeToken, setToken } from "@/lib/token";
 
 type AuthContextType = {
@@ -63,6 +64,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const isLoading = isInitializing || (Boolean(token) && isUserLoading);
   const isAuthenticated = Boolean(token) && Boolean(user);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      registerForPushNotificationsAsync();
+    }
+  }, [isAuthenticated]);
 
   return (
     <AuthContext.Provider

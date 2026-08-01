@@ -35,3 +35,9 @@ export const loginSchema = z.object({
 
 export type SignupInput = z.infer<typeof signupSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+
+export const updateFcmTokenSchema = z.object({
+  fcmToken: z.string().min(1, "FCM token is required"),
+});
+
+export type UpdateFcmTokenInput = z.infer<typeof updateFcmTokenSchema>;

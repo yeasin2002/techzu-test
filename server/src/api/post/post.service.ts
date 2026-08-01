@@ -1,5 +1,5 @@
 import type { RequestHandler } from "express";
-import { and, count, desc, eq } from "drizzle-orm";
+import { and, count, desc, eq, isNotNull, ne } from "drizzle-orm";
 
 import { comments, db, likes, posts, users } from "@/db";
 import {
@@ -40,6 +40,25 @@ export const createPost: RequestHandler = async (req, res) => {
     }
 
     console.log(`📝 [Posts] Post created by ${req.user.username}: "${text.slice(0, 30)}..."`);
+
+    // Notify all other users who have an FCM token
+    try {
+      const otherUsers = await db
+        .select({ id: users.id })
+        .from(users)
+        .where(and(ne(users.id, req.user.userId), isNotNull(users.fcmToken)));
+
+      for (const recipient of otherUsers) {
+        sendPushNotificationToUser(
+          recipient.id,
+          "New Post! 📝",
+          `${req.user.username} shared a new post`,
+          { postId: newPost.id, type: "post" },
+        );
+      }
+    } catch (fcmError: any) {
+      console.warn("⚠️ [Posts] Error notifying users of new post:", fcmError.message || fcmError);
+    }
 
     return sendCreated(res, "Post created successfully", {
       id: newPost.id,

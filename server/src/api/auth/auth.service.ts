@@ -201,3 +201,32 @@ export const getMe: RequestHandler = async (req, res) => {
     return sendInternalError(res, error.message || "Failed to fetch profile");
   }
 };
+
+/**
+ * Update FCM token for authenticated user
+ * POST /api/auth/fcm-token
+ */
+export const updateFcmToken: RequestHandler = async (req, res) => {
+  try {
+    if (!req.user) {
+      return sendUnauthorized(res, "Unauthorized");
+    }
+
+    const { fcmToken } = req.body as { fcmToken: string };
+
+    await db
+      .update(users)
+      .set({ fcmToken, updatedAt: new Date() })
+      .where(eq(users.id, req.user.userId));
+
+    console.log(`📱 [Auth] FCM token updated for user: ${req.user.username}`);
+
+    return sendSuccess(res, 200, "FCM token updated successfully", {
+      userId: req.user.userId,
+      fcmToken,
+    });
+  } catch (error: any) {
+    console.error("❌ [Auth] Update FCM token error:", error.message || error);
+    return sendInternalError(res, error.message || "Failed to update FCM token");
+  }
+};

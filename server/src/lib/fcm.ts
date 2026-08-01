@@ -1,18 +1,38 @@
+import fs from "node:fs";
+import path from "node:path";
 import { eq } from "drizzle-orm";
 import admin from "firebase-admin";
 
 import { db, users } from "@/db";
 
-// Initialize Firebase Admin SDK if service account is provided in environment
-if (!admin.apps.length && process.env.FIREBASE_SERVICE_ACCOUNT) {
+// Initialize Firebase Admin SDK
+if (!admin.apps.length) {
   try {
-    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
-    });
-    console.log("🔥 Firebase Admin SDK initialized successfully");
-  } catch (error) {
-    console.warn("⚠️ Failed to initialize Firebase Admin SDK from environment:", error);
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+      admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+      });
+      console.log("🔥 Firebase Admin SDK initialized successfully via FIREBASE_SERVICE_ACCOUNT env");
+    } else {
+      const possiblePaths = [
+        path.join(process.cwd(), "service-account.json"),
+        path.join(process.cwd(), "firebase-service-account.json"),
+      ];
+
+      for (const filePath of possiblePaths) {
+        if (fs.existsSync(filePath)) {
+          const serviceAccount = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+          admin.initializeApp({
+            credential: admin.credential.cert(serviceAccount),
+          });
+          console.log(`🔥 Firebase Admin SDK initialized successfully via ${path.basename(filePath)}`);
+          break;
+        }
+      }
+    }
+  } catch (error: any) {
+    console.warn("⚠️ Failed to initialize Firebase Admin SDK:", error.message || error);
   }
 }
 
@@ -33,7 +53,7 @@ export async function sendPushNotificationToUser(
       .limit(1);
 
     if (!user || !user.fcmToken) {
-      console.log(`📱 [FCM] User ${userId} has no FCM token. Skipping push notification.`);
+      console.log(`📱 [FCM] User ${userId} has no FCM token saved. Skipping push notification.`);
       return false;
     }
 
@@ -48,11 +68,11 @@ export async function sendPushNotificationToUser(
         },
         data: data || {},
       });
-      console.log(`✅ [FCM Push] Successfully sent push notification to ${user.username}`);
+      console.log(`✅ [FCM Push] Successfully delivered push notification to ${user.username}`);
       return true;
     }
 
-    console.log(`ℹ️ [FCM Push Sim] (Firebase Admin not configured) Notification payload for ${user.username}:`, { title, body, data });
+    console.log(`ℹ️ [FCM Push Sim] (Firebase Admin not configured) Simulated notification for ${user.username}:`, { title, body, data });
     return true;
   } catch (error: any) {
     console.error("❌ [FCM Push Error]:", error.message || error);
