@@ -47,4 +47,3 @@ function StackLayout() {
     </Stack>
   );
 }
-

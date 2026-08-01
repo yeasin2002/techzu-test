@@ -34,16 +34,17 @@ export const useCreatePost = () => {
       if (response?.data) {
         // Prepend new post into active feed cache instantly
         queryClient.setQueriesData<PostFeedResponse>(
-          { queryKey: POST_KEYS.all() },
+          { queryKey: POST_KEYS.lists() },
           (old) => {
-            if (!old || !old.data) return old;
+            if (!old || !old.data || !Array.isArray(old.data.posts)) return old;
+            const postsList = old.data.posts;
             const newPost = response.data;
-            if (old.data.posts.some((p) => p.id === newPost.id)) return old;
+            if (postsList.some((p) => p.id === newPost.id)) return old;
             return {
               ...old,
               data: {
                 ...old.data,
-                posts: [newPost, ...old.data.posts],
+                posts: [newPost, ...postsList],
                 pagination: {
                   ...old.data.pagination,
                   total: (old.data.pagination.total || 0) + 1,
